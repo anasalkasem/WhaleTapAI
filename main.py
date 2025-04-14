@@ -1,32 +1,39 @@
 
 import os
-import requests
-import time
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import psycopg2
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-HELIUS_API_KEY = os.getenv("HELIUS_API_KEY")
+# الاتصال بقاعدة البيانات من متغير البيئة
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("مرحباً بك في بوت WhaleTap!")
+# فتح الاتصال
+conn = psycopg2.connect(DATABASE_URL)
+cursor = conn.cursor()
 
-async def whales(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("جاري البحث عن صفقات الحيتان...")
+# إنشاء جدول للمحافظ إذا لم يكن موجود
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS whales (
+        id SERIAL PRIMARY KEY,
+        wallet_address TEXT UNIQUE,
+        activity TEXT
+    );
+""")
+conn.commit()
 
-    url = f"https://api.helius.xyz/v0/addresses?api-key={HELIUS_API_KEY}"
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            result = response.json()
-            await update.message.reply_text(f"عدد المحافظ: {len(result)}")
-        else:
-            await update.message.reply_text("فشل في جلب البيانات من Helius.")
-    except Exception as e:
-        await update.message.reply_text(f"حدث خطأ: {str(e)}")
+# إدخال محفظة تجريبية
+try:
+    cursor.execute("INSERT INTO whales (wallet_address, activity) VALUES (%s, %s)",
+                   ("So1anaWhaleWalletTest123", "buy"))
+    conn.commit()
+except psycopg2.errors.UniqueViolation:
+    conn.rollback()
 
-if __name__ == "__main__":
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("whales", whales))
-    app.run_polling()
+# قراءة المحافظ من القاعدة
+cursor.execute("SELECT * FROM whales;")
+rows = cursor.fetchall()
+
+for row in rows:
+    print(f"Whale Wallet: {row[1]} | Activity: {row[2]}")
+
+# إغلاق الاتصال
+cursor.close()
+conn.close()
