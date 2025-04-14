@@ -1,34 +1,32 @@
+
 import os
 import requests
-from flask import Flask, request
+import time
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-app = Flask(__name__)
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+HELIUS_API_KEY = os.getenv("HELIUS_API_KEY")
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("مرحباً بك في بوت WhaleTap!")
 
-@app.route('/', methods=["POST"])
-def webhook():
-    data = request.get_json()
+async def whales(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("جاري البحث عن صفقات الحيتان...")
 
-    if "message" in data:
-        chat_id = data["message"]["chat"]["id"]
-        text = data["message"].get("text", "")
-
-        # رد مبدئي على أي رسالة
-        message = "أهلاً بك في WhaleTap! أرسل لي عنوان محفظة وسأعطيك تفاصيلها قريباً."
-
-        # إرسال الرد للمستخدم
-        requests.post(API_URL, json={
-            "chat_id": chat_id,
-            "text": message
-        })
-
-    return {"ok": True}
-
-@app.route('/')
-def home():
-    return "WhaleTap bot is online!"
+    url = f"https://api.helius.xyz/v0/addresses?api-key={HELIUS_API_KEY}"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            result = response.json()
+            await update.message.reply_text(f"عدد المحافظ: {len(result)}")
+        else:
+            await update.message.reply_text("فشل في جلب البيانات من Helius.")
+    except Exception as e:
+        await update.message.reply_text(f"حدث خطأ: {str(e)}")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("whales", whales))
+    app.run_polling()
