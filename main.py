@@ -1,55 +1,112 @@
 import os
 import psycopg2
-import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from dotenv import load_dotenv
 
-# إعداد الاتصال بقاعدة البيانات
-DATABASE_URL = os.environ.get("DATABASE_URL")
-conn = psycopg2.connect(DATABASE_URL)
-cursor = conn.cursor()
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-# إعداد البوت
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+LANGUAGES = {
+    "ar": {
+        "welcome": "أهلًا بك في بوت WhaleTap!",
+        "menu": "اختر من القائمة:",
+        "buy": "شراء",
+        "sell": "بيع",
+        "copy": "نسخ التداول",
+        "auto": "التداول التلقائي",
+        "stop": "إيقاف النسخ",
+        "resume": "متابعة النسخ",
+        "loss": "حد الخسارة",
+        "alerts": "تنبيهات",
+        "wallet": "المحفظة",
+        "create_wallet": "إنشاء محفظة",
+        "lang": "اللغة: عربي"
+    },
+    "en": {
+        "welcome": "Welcome to WhaleTap Bot!",
+        "menu": "Choose from the menu:",
+        "buy": "Buy",
+        "sell": "Sell",
+        "copy": "Copy Trading",
+        "auto": "Auto Trading",
+        "stop": "Stop Copy",
+        "resume": "Resume Copy",
+        "loss": "Stop Loss",
+        "alerts": "Alerts",
+        "wallet": "Wallet",
+        "create_wallet": "Create Wallet",
+        "lang": "Language: English"
+    },
+    "es": {
+        "welcome": "¡Bienvenido al bot WhaleTap!",
+        "menu": "Elige del menú:",
+        "buy": "Comprar",
+        "sell": "Vender",
+        "copy": "Copiar operaciones",
+        "auto": "Auto trading",
+        "stop": "Detener copia",
+        "resume": "Reanudar copia",
+        "loss": "Límite de pérdida",
+        "alerts": "Alertas",
+        "wallet": "Cartera",
+        "create_wallet": "Crear cartera",
+        "lang": "Idioma: Español"
+    }
+}
 
-# تهيئة سجل الأخطاء
-logging.basicConfig(level=logging.INFO)
+user_lang = {}
 
-# الرد على /start
+def get_text(user_id, key):
+    lang = user_lang.get(user_id, "ar")
+    return LANGUAGES[lang][key]
+
+def main_keyboard(user_id):
+    lang = user_lang.get(user_id, "ar")
+    texts = LANGUAGES[lang]
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(texts["buy"], callback_data="buy"),
+         InlineKeyboardButton(texts["sell"], callback_data="sell")],
+        [InlineKeyboardButton(texts["copy"], callback_data="copy"),
+         InlineKeyboardButton(texts["auto"], callback_data="auto")],
+        [InlineKeyboardButton(texts["stop"], callback_data="stop"),
+         InlineKeyboardButton(texts["resume"], callback_data="resume")],
+        [InlineKeyboardButton(texts["loss"], callback_data="loss"),
+         InlineKeyboardButton(texts["alerts"], callback_data="alerts")],
+        [InlineKeyboardButton(texts["wallet"], callback_data="wallet"),
+         InlineKeyboardButton(texts["create_wallet"], callback_data="create_wallet")],
+        [InlineKeyboardButton("اللغة: عربي", callback_data="lang_ar"),
+         InlineKeyboardButton("Language: English", callback_data="lang_en"),
+         InlineKeyboardButton("Idioma: Español", callback_data="lang_es")]
+    ])
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [InlineKeyboardButton("شراء", callback_data="buy"), InlineKeyboardButton("بيع", callback_data="sell")],
-        [InlineKeyboardButton("نسخ التداول", callback_data="copy"), InlineKeyboardButton("التداول التلقائي", callback_data="auto")],
-        [InlineKeyboardButton("إيقاف النسخ", callback_data="stop_copy"), InlineKeyboardButton("متابعة النسخ", callback_data="resume_copy")],
-        [InlineKeyboardButton("حد الخسارة", callback_data="stop_loss"), InlineKeyboardButton("تنبيهات", callback_data="alerts")],
-        [InlineKeyboardButton("المحفظة", callback_data="wallet"), InlineKeyboardButton("إنشاء محفظة", callback_data="create_wallet")],
-        [InlineKeyboardButton("اللغة: عربي", callback_data="lang_ar"), InlineKeyboardButton("Language: English", callback_data="lang_en"), InlineKeyboardButton("Idioma: Español", callback_data="lang_es")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("اختر من القائمة:", reply_markup=reply_markup)
+    user_id = update.effective_user.id
+    user_lang[user_id] = "ar"
+    await update.message.reply_text(
+        get_text(user_id, "welcome"),
+        reply_markup=main_keyboard(user_id)
+    )
 
-# التعامل مع الضغط على الأزرار
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+    user_id = query.from_user.id
     await query.answer()
-    
-    if query.data == "wallet":
-        user_id = query.from_user.id
-        cursor.execute("SELECT wallet_address FROM whales WHERE id = %s;", (str(user_id),))
-        result = cursor.fetchone()
-        if result:
-            await query.edit_message_text(f"محفظتك موجودة:\n{result[0]}")
-        else:
-            await query.edit_message_text("لا يوجد محفظة مسجلة.")
+    data = query.data
+
+    if data.startswith("lang_"):
+        user_lang[user_id] = data.split("_")[1]
+        await query.edit_message_text(get_text(user_id, "menu"), reply_markup=main_keyboard(user_id))
     else:
-        await query.edit_message_text(f"تم اختيار: {query.data}")
+        await query.edit_message_text(f"{get_text(user_id, 'menu')}
 
-# تهيئة التطبيق
-app = ApplicationBuilder().token(TOKEN).build()
+تم اختيار: {data}")
+
+app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CallbackQueryHandler(button_handler))
+app.add_handler(CallbackQueryHandler(handle_callback))
 
-# تشغيل البوت
 if __name__ == "__main__":
     import asyncio
     asyncio.run(app.run_polling())
