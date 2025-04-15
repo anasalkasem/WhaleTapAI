@@ -1,4 +1,3 @@
-
 import os
 import psycopg2
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -16,26 +15,20 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 LANGUAGES = {
     "en": {
         "menu": "Main Menu:",
-        "wallet_exists": "Your wallet already exists:
-{wallet}",
-        "wallet_created": "New wallet created:
-{wallet}",
+        "wallet_exists": "Your wallet already exists:\n{wallet}",
+        "wallet_created": "New wallet created:\n{wallet}",
         "select_option": "Please choose an option:"
     },
     "ar": {
         "menu": "القائمة الرئيسية:",
-        "wallet_exists": "محفظتك موجودة:
-{wallet}",
-        "wallet_created": "تم إنشاء محفظة جديدة:
-{wallet}",
+        "wallet_exists": "محفظتك موجودة:\n{wallet}",
+        "wallet_created": "تم إنشاء محفظة جديدة:\n{wallet}",
         "select_option": "يرجى اختيار خيار:"
     },
     "es": {
         "menu": "Menú principal:",
-        "wallet_exists": "Tu billetera ya existe:
-{wallet}",
-        "wallet_created": "Nueva billetera creada:
-{wallet}",
+        "wallet_exists": "Tu billetera ya existe:\n{wallet}",
+        "wallet_created": "Nueva billetera creada:\n{wallet}",
         "select_option": "Por favor elige una opción:"
     }
 }
@@ -47,7 +40,6 @@ def get_text(user_id, key):
     return LANGUAGES.get(lang, LANGUAGES["en"]).get(key, "")
 
 def main_keyboard(user_id):
-    lang = user_languages.get(user_id, "en")
     buttons = [
         [InlineKeyboardButton("Buy | شراء | Comprar", callback_data="buy")],
         [InlineKeyboardButton("Sell | بيع | Vender", callback_data="sell")],
@@ -63,7 +55,7 @@ def main_keyboard(user_id):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    user_languages[user_id] = "en"  # Default
+    user_languages[user_id] = "en"  # Default language
     await update.message.reply_text(
         get_text(user_id, "menu"),
         reply_markup=main_keyboard(user_id)
@@ -92,9 +84,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cursor.close()
         conn.close()
     else:
-        await query.edit_message_text(
-            f"تم اختيار: {data}"
-        )
+        await query.edit_message_text(f"You selected: {data}")
 
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
