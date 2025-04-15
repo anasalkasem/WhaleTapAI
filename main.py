@@ -101,7 +101,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
 await query.edit_message_text(f"{get_text(user_id, 'menu')}", reply_markup=main_keyboard(user_id))
 
-تم اختيار: {data}")
+await query.edit_message_text(f"تم اختيار: {data}")
 
 app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
