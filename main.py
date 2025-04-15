@@ -67,7 +67,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
-    data = query.
+    data = query.data
+
+    if data == "buy":
+        await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
+    else:
+        await query.edit_message_text("الخيار غير متاح بعد.")
 
     if data == "buy":
         await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
