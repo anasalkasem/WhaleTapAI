@@ -23,19 +23,28 @@ LANGUAGES = {
         "menu": "Main Menu:",
         "wallet_exists": "Your wallet already exists:\n{wallet}",
         "wallet_created": "New wallet created:\n{wallet}",
-        "select_option": "Please choose an option:"
+        "select_option": "Please choose an option:",
+        "buy_success": "Simulated buy order executed successfully ✅",
+        "sell_success": "Simulated sell order executed successfully ✅",
+        "option_unavailable": "This option is not available yet."
     },
     "ar": {
         "menu": "القائمة الرئيسية:",
         "wallet_exists": "محفظتك موجودة:\n{wallet}",
         "wallet_created": "تم إنشاء محفظة جديدة:\n{wallet}",
-        "select_option": "يرجى اختيار خيار:"
+        "select_option": "يرجى اختيار خيار:",
+        "buy_success": "تم تنفيذ أمر شراء وهمي بنجاح ✅",
+        "sell_success": "تم تنفيذ أمر بيع وهمي بنجاح ✅",
+        "option_unavailable": "الخيار غير متاح بعد."
     },
     "es": {
         "menu": "Menú principal:",
         "wallet_exists": "Tu billetera ya existe:\n{wallet}",
         "wallet_created": "Nueva billetera creada:\n{wallet}",
-        "select_option": "Por favor elige una opción:"
+        "select_option": "Por favor elige una opción:",
+        "buy_success": "Orden de compra simulada ejecutada con éxito ✅",
+        "sell_success": "Orden de venta simulada ejecutada con éxito ✅",
+        "option_unavailable": "Esta opción no está disponible todavía."
     }
 }
 
@@ -60,8 +69,11 @@ def main_keyboard(user_id):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    user_languages[user_id] = "en"
-    await update.message.reply_text(get_text(user_id, "menu"), reply_markup=main_keyboard(user_id))
+    user_languages[user_id] = "en"  # Default language
+    await update.message.reply_text(
+        get_text(user_id, "menu"),
+        reply_markup=main_keyboard(user_id)
+    )
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -69,81 +81,49 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = query.from_user.id
     data = query.data
 
-    if data == "buy":
-        await query.edit_message_text("تم تنفيذ عملية شراء وهمية.")
-    
-    elif data == "sell":
-        await query.edit_message_text("تم تنفيذ عملية بيع وهمية.")
-
-    elif data == "wallet":
-        conn = psycopg2.connect(DATABASE_URL)
-        cursor = conn.cursor()
-        cursor.execute("SELECT wallet_address FROM whales WHERE id = %s;", (user_id,))
-        result = cursor.fetchone()
-        if result:
-            await query.edit_message_text(
-                get_text(user_id, "wallet_exists").format(wallet=result[0])
-            )
+    try:
+        if data == "buy":
+            await query.edit_message_text(get_text(user_id, "buy_success"))
+            
+        elif data == "sell":
+            await query.edit_message_text(get_text(user_id, "sell_success"))
+            
+        elif data == "wallet":
+            conn = psycopg2.connect(DATABASE_URL)
+            cursor = conn.cursor()
+            cursor.execute("SELECT wallet_address FROM whales WHERE user_id = %s;", (user_id,))
+            result = cursor.fetchone()
+            
+            if result:
+                await query.edit_message_text(
+                    get_text(user_id, "wallet_exists").format(wallet=result[0])
+                )
+            else:
+                await query.edit_message_text(
+                    get_text(user_id, "menu"),
+                    reply_markup=main_keyboard(user_id)
+                )
+            cursor.close()
+            conn.close()
+            
         else:
-            await query.edit_message_text(
-                get_text(user_id, "menu"),
-                reply_markup=main_keyboard(user_id)
-            )
-        cursor.close()
-        conn.close()
-
-    else:
-        await query.edit_message_text("الخيار غير متاح بعد.")
-
-    if data == "buy":
-        await query.edit_message_text("عملية شراء وهمية تمت.")  # مجرد تجريب
-    else:
-        await query.edit_message_text("الخيار غير متاح بعد.")
-        await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
-    else:
-        await query.edit_message_text("الخيار غير متاح بعد.")
-    if data == "buy":
-        await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
-
-    else:
-        await query.edit_message_text("الخيار غير متاح بعد.")
-
-    if data == "buy":
-        await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
-
-    else:
-        await query.edit_message_text("الخيار غير متاح بعد.")
-
-    if data == "buy":
-        await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
-
-    else:
-        await query.edit_message_text("الخيار غير متاح بعد.")data
-
-    if data == "wallet":
-        conn = psycopg2.connect(DATABASE_URL)
-        cursor = conn.cursor()
-        cursor.execute("SELECT wallet_address FROM whales WHERE id = %s;", (user_id,))
-        result = cursor.fetchone()
-        if result:
-            await query.edit_message_text(
-                get_text(user_id, "wallet_exists").format(wallet=result[0])
-            )
-        else:
-            await query.edit_message_text(
-                get_text(user_id, "menu"),
-                reply_markup=main_keyboard(user_id)
-            )
-        cursor.close()
-        conn.close()
-    else:
-        await query.edit_message_text(f"تم اختيار: {data}")
+            await query.edit_message_text(get_text(user_id, "option_unavailable"))
+            
+    except Exception as e:
+        print(f"Error: {e}")
+        await query.edit_message_text("An error occurred. Please try again later.")
 
 async def main():
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
-    await app.run_polling()
+    try:
+        app = ApplicationBuilder().token(TOKEN).build()
+        app.add_handler(CommandHandler("start", start))
+        app.add_handler(CallbackQueryHandler(button_handler))
+        
+        print("Bot is running...")
+        await app.run_polling()
+        
+    except Exception as e:
+        print(f"Application error: {e}")
 
-# تشغيل البوت
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
