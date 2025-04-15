@@ -99,7 +99,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_lang[user_id] = data.split("_")[1]
         await query.edit_message_text(get_text(user_id, "menu"), reply_markup=main_keyboard(user_id))
     else:
-        await query.edit_message_text(f"{get_text(user_id, 'menu')}
+await query.edit_message_text(f"{get_text(user_id, 'menu')}", reply_markup=main_keyboard(user_id))
 
 تم اختيار: {data}")
 
