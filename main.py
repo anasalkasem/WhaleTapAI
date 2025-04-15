@@ -1,5 +1,7 @@
 import os
 import psycopg2
+import nest_asyncio
+import asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -7,11 +9,15 @@ from telegram.ext import (
     CallbackQueryHandler,
     ContextTypes,
 )
-import asyncio
 
+# تفعيل nest_asyncio لحل مشكلة event loop
+nest_asyncio.apply()
+
+# التوكن ومتغير الاتصال بقاعدة البيانات
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# إعداد اللغات
 LANGUAGES = {
     "en": {
         "menu": "Main Menu:",
@@ -40,7 +46,7 @@ def get_text(user_id, key):
     return LANGUAGES.get(lang, LANGUAGES["en"]).get(key, "")
 
 def main_keyboard(user_id):
-    buttons = [
+    return InlineKeyboardMarkup([
         [InlineKeyboardButton("Buy | شراء | Comprar", callback_data="buy")],
         [InlineKeyboardButton("Sell | بيع | Vender", callback_data="sell")],
         [InlineKeyboardButton("Auto Trade | تداول تلقائي", callback_data="auto")],
@@ -50,16 +56,12 @@ def main_keyboard(user_id):
         [InlineKeyboardButton("Alerts | تنبيهات | Alertas", callback_data="alerts")],
         [InlineKeyboardButton("My Wallet | محفظتي | Mi billetera", callback_data="wallet")],
         [InlineKeyboardButton("Create Wallet | إنشاء محفظة | Crear billetera", callback_data="create_wallet")],
-    ]
-    return InlineKeyboardMarkup(buttons)
+    ])
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    user_languages[user_id] = "en"  # Default language
-    await update.message.reply_text(
-        get_text(user_id, "menu"),
-        reply_markup=main_keyboard(user_id)
-    )
+    user_languages[user_id] = "en"
+    await update.message.reply_text(get_text(user_id, "menu"), reply_markup=main_keyboard(user_id))
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -84,7 +86,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cursor.close()
         conn.close()
     else:
-        await query.edit_message_text(f"You selected: {data}")
+        await query.edit_message_text(f"تم اختيار: {data}")
 
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
@@ -92,5 +94,5 @@ async def main():
     app.add_handler(CallbackQueryHandler(button_handler))
     await app.run_polling()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# تشغيل البوت
+asyncio.run(main())
