@@ -1,62 +1,55 @@
 import os
 import psycopg2
+from psycopg2 import sql, errors
 from telegram import Update, Bot
-from telegram.ext import Updater, CommandHandler, CallbackContext
-from dotenv import load_dotenv
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# تحميل المتغيرات البيئية (اختياري إذا تستخدم ملف .env محلياً)
-load_dotenv()
+# إعداد الاتصال بقاعدة البيانات
+DATABASE_URL = os.environ.get("DATABASE_URL")
+conn = psycopg2.connect(DATABASE_URL)
+cursor = conn.cursor()
 
-# إعداد التوكن والاتصال بقاعدة البيانات
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# الاتصال بقاعدة البيانات
-def connect_db():
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-    # إنشاء الجدول إن لم يكن موجودًا
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS whales (
-            id SERIAL PRIMARY KEY,
-            wallet_address TEXT UNIQUE,
-            activity TEXT
-        );
-    """)
-    conn.commit()
-    return conn, cursor
+# إنشاء جدول المحافظ إذا لم يكن موجودًا
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS whales (
+        id SERIAL PRIMARY KEY,
+        wallet_address TEXT UNIQUE,
+        activity TEXT
+    );
+""")
+conn.commit()
 
 # أمر /start
-def start(update: Update, context: CallbackContext):
-    user = update.effective_user.first_name
-    update.message.reply_text(f"أهلاً {user}! مرحباً بك في بوت WhaleTap لنسخ صفقات الحيتان.")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("أهلاً بك في WhaleTap! أرسل /addwallet <محفظتك> لإضافتها.")
 
-    # مثال على قراءة المحافظ من قاعدة البيانات
+# أمر /addwallet
+async def add_wallet(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text("الرجاء إرسال عنوان المحفظة بعد الأمر مثل:\n/addwallet So1anaWhaleWallet")
+        return
+
+    wallet = context.args[0]
     try:
-        conn, cursor = connect_db()
-        cursor.execute("SELECT wallet_address, activity FROM whales LIMIT 3;")
-        rows = cursor.fetchall()
-        if rows:
-            msg = "\n".join([f"{row[0]} → {row[1]}" for row in rows])
-            update.message.reply_text(f"محافظ نشطة:\n{msg}")
-        else:
-            update.message.reply_text("لا توجد محافظ مسجلة بعد.")
-        cursor.close()
-        conn.close()
+        cursor.execute("INSERT INTO whales (wallet_address, activity) VALUES (%s, %s)", (wallet, 'unknown'))
+        conn.commit()
+        await update.message.reply_text(f"تمت إضافة المحفظة: {wallet}")
+    except errors.UniqueViolation:
+        conn.rollback()
+        await update.message.reply_text("هذه المحفظة مضافة مسبقًا.")
     except Exception as e:
-        update.message.reply_text("حدث خطأ أثناء الاتصال بقاعدة البيانات.")
-        print(e)
+        await update.message.reply_text(f"حدث خطأ: {str(e)}")
 
-# إعداد البوت وتشغيله
-def main():
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
+# تشغيل البوت
+async def main():
+    TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+    app = ApplicationBuilder().token(TOKEN).build()
 
-    dp.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("addwallet", add_wallet))
 
-    print("Bot is running...")
-    updater.start_polling()
-    updater.idle()
+    await app.run_polling()
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
