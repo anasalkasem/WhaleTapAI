@@ -63,11 +63,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_languages[user_id] = "en"
     await update.message.reply_text(get_text(user_id, "menu"), reply_markup=main_keyboard(user_id))
 
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    user_id = query.data
-
+await query.edit_message_text("الخيار غير متاح بعد.")
     if data == "buy":
         await query.edit_message_text("تم تنفيذ أمر شراء وهمي بنجاح ✅\n(This is a simulated buy order.)")
     else:
