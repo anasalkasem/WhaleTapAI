@@ -1,4 +1,0 @@
-subscriptions/keyboards.py
-subscriptions/payment_handlers.py
-subscriptions/subscription_plans.py
-subscriptions/db_utils.py
