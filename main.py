@@ -70,6 +70,32 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
 
     if data == "buy":
+        await query.edit_message_text("تم تنفيذ عملية شراء وهمية.")
+    
+    elif data == "sell":
+        await query.edit_message_text("تم تنفيذ عملية بيع وهمية.")
+
+    elif data == "wallet":
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        cursor.execute("SELECT wallet_address FROM whales WHERE id = %s;", (user_id,))
+        result = cursor.fetchone()
+        if result:
+            await query.edit_message_text(
+                get_text(user_id, "wallet_exists").format(wallet=result[0])
+            )
+        else:
+            await query.edit_message_text(
+                get_text(user_id, "menu"),
+                reply_markup=main_keyboard(user_id)
+            )
+        cursor.close()
+        conn.close()
+
+    else:
+        await query.edit_message_text("الخيار غير متاح بعد.")
+
+    if data == "buy":
         await query.edit_message_text("عملية شراء وهمية تمت.")  # مجرد تجريب
     else:
         await query.edit_message_text("الخيار غير متاح بعد.")
