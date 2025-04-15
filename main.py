@@ -63,7 +63,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         result = cursor.fetchone()
         if result:
             await query.edit_message_text(f"محفظتك موجودة:\n{result[0]}")
-{result[0]}")
+await query.edit_message_text(f"محفظتك موجودة:\n{result[0]}")
         else:
             wallet = f"Wallet_{user_id}_SOL"
             cursor.execute("INSERT INTO user_wallets (user_id, wallet_address) VALUES (%s, %s)", (user_id, wallet))
