@@ -1,29 +1,21 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from .db_utils import save_payment
-from .subscription_plans import PLANS
 
 async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    _, plan, currency = query.data.split('_')
+    await query.answer()
 
-    wallet = get_wallet_address(currency)
+    user_id = update.effective_user.id
+
+    # رسالة توضح أن التحقق سيتم يدويًا
     await query.edit_message_text(
-        text=f"💳 *طريقة الدفع:* {currency}\n"
-             f"🪙 **المبلغ:** {PLANS[plan]['price']} {currency}\n"
-             f"📦 **الباقة:** {plan.upper()}\n"
-             f"🔷 **المحفظة:** `{wallet}`\n"
-             f"⏳ سيتم التفعيل خلال 10 دقائق بعد التأكيد.",
-        parse_mode="Markdown"
+        "تم استلام طلب الاشتراك الخاص بك.\n"
+        "سيتحقق المسؤول من الدفع ويفعّل حسابك خلال وقت قصير."
     )
-    save_payment(query.from_user.id, plan, currency, PLANS[plan]["price"])
 
-def get_wallet_address(currency: str) -> str:
-    wallets = {
-        "SOL": "So1ANaWalletAddress123456789",
-        "USDT": "TetherERC20Address123456789"
-    }
-    return wallets.get(currency, "")
-    await query.edit_message_text(
-    text="✅ تم استلام بيانات الدفع.\nسيتم التحقق يدويًا وتفعيل اشتراكك خلال 10 دقائق.\nشكراً لك!",
-)
+    # إرسال إشعار إلى الأدمن
+    admin_id = int(os.getenv("ADMIN_ID"))
+    await context.bot.send_message(
+        chat_id=admin_id,
+        text=f"طلب اشتراك جديد من المستخدم: {user_id}\nيرجى التحقق يدويًا وتفعيل الاشتراك إن كان الدفع صحيح."
+    )
