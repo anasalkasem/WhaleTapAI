@@ -1,3 +1,4 @@
+import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from subscriptions.keyboards import plans_keyboard
 from subscriptions.payment_handlers import handle_payment
@@ -9,7 +10,7 @@ async def start(update, context):
     )
 
 def main():
-    app = Application.builder().token("YOUR_TELEGRAM_BOT_TOKEN").build()
+    app = Application.builder().token(os.getenv("TOKEN")).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
     app.run_polling()
