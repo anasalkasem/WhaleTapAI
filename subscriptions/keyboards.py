@@ -1,7 +1,8 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 def plans_keyboard():
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton("⭐ اشتراك PRO - 10 USDT/شهر", callback_data="pay_pro_usdt")],
-        [InlineKeyboardButton("💎 اشتراك PRO - 10 SOL/شهر", callback_data="pay_pro_sol")]
-    ])
+    keyboard = [
+        [InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="pay_pro")],
+        [InlineKeyboardButton("🆓 اشتراك مجاني محدود (1 صفقة/يوم)", callback_data="pay_free")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
