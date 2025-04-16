@@ -1,24 +1,24 @@
+from telegram import Update
+from telegram.ext import ContextTypes
+from .db_utils import save_payment
+
 async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+    await query.answer()
+
     user_id = query.from_user.id
     data = query.data
 
-    if data == "free_plan":
-        # تفعيل مباشر
-        update_user_subscription(user_id, "free", "active")
-        await query.edit_message_text("✅ تم تفعيل الباقة المجانية. يمكنك الآن نسخ صفقة واحدة يوميًا.")
-    elif data.startswith("pay_"):
-        _, plan, currency = data.split("_")
+    if data == "pay_pro":
         await query.edit_message_text(
-            f"""
-💳 *طريقة الدفع: {currency}*
--
-🪙 **المبلغ:** {PLANS[plan]['price']} {currency}
-📦 **الباقة:** {plan.upper()}
-🔷 **المحفظة:** `{get_wallet_address(currency)}`
--
-⏳ *تم استلام طلبك وسيتم التفعيل بعد التأكيد اليدوي.*
-""",
-            parse_mode="Markdown"
+            "✅ تم استلام طلب الاشتراك الخاص بك.\n"
+            "سيتحقق المسؤول من الدفع ويُفعّل حسابك خلال وقت قصير."
         )
-        save_payment(user_id, plan, currency, PLANS[plan]["price"])
+        # يتم حفظ الطلب بقاعدة البيانات بانتظار التفعيل اليدوي
+        save_payment(user_id, "pro", "manual")
+
+    elif data == "pay_free":
+        await query.edit_message_text(
+            "🎉 تم تفعيل اشتراكك المجاني المحدود (صفقة واحدة يوميًا)."
+        )
+        save_payment(user_id, "free", "auto")
