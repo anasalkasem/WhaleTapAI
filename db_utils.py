@@ -29,3 +29,9 @@ def save_payment(user_id: int, plan: str, currency: str, amount: float):
     ''', (user_id, plan, currency, amount, expiry))
     conn.commit()
     conn.close()
+    def activate_subscription(user_id: int):
+    conn = sqlite3.connect('subscriptions.db')
+    cursor = conn.cursor()
+    cursor.execute("UPDATE payments SET status = 'active' WHERE user_id = ?", (user_id,))
+    conn.commit()
+    conn.close()
