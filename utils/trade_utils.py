@@ -1,21 +1,18 @@
-from models.database import WhaleTrade, SessionLocal
+from models.database import WhaleTrade
+from models.database import get_db
 from datetime import datetime
 
-def save_fake_trade(user_id: int, wallet: str):
-    db = SessionLocal()
-    try:
-        trade = WhaleTrade(
-            user_id=user_id,
-            whale_wallet=wallet,
-            token_address="FakeToken123",
-            amount=1000.0,
-            trade_type="buy",
-            timestamp=datetime.utcnow()
-        )
-        db.add(trade)
-        db.commit()
-    except Exception as e:
-        db.rollback()
-        print(f"Error saving trade: {e}")
-    finally:
-        db.close()
+def copy_whale_trade(user_id: int, wallet_address: str, token: str, amount: float, tx_hash: str):
+    db = get_db()
+    trade = WhaleTrade(
+        user_id=user_id,
+        wallet_address=wallet_address,
+        token=token,
+        amount=amount,
+        tx_hash=tx_hash,
+        copied_at=datetime.utcnow()
+    )
+    db.add(trade)
+    db.commit()
+    db.close()
+    return trade
