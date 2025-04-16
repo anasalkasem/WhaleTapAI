@@ -24,3 +24,6 @@ def get_wallet_address(currency: str) -> str:
         "USDT": "TetherERC20Address123456789"
     }
     return wallets.get(currency, "")
+    await query.edit_message_text(
+    text="✅ تم استلام بيانات الدفع.\nسيتم التحقق يدويًا وتفعيل اشتراكك خلال 10 دقائق.\nشكراً لك!",
+)
