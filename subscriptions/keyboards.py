@@ -17,3 +17,12 @@ def main_menu_keyboard():
         [InlineKeyboardButton("📈 نسخ صفقة الحوت", callback_data="copy_trade")],
         [InlineKeyboardButton("🧾 حالة الاشتراك", callback_data="subscription_status")]
     ])
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+
+def plans_keyboard():
+    keyboard = [
+        [InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="pay_pro")],
+        [InlineKeyboardButton("🆓 اشتراك مجاني محدود (1 صفقة/يوم)", callback_data="pay_free")],
+        [InlineKeyboardButton("🔁 نسخ الصفقة الآن", callback_data="copy_trade")]  # الزر الجديد
+    ]
+    return InlineKeyboardMarkup(keyboard)
