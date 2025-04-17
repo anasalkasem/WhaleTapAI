@@ -1,104 +1,93 @@
+import logging
 import os
-import asyncio
-import nest_asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
-from telegram.error import TelegramError
-import logging
 
-# Apply nest_asyncio for async environments
-nest_asyncio.apply()
-
-# Set up logging
+# إعداد اللوجر
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
-# Environment variables
-TOKEN = os.getenv("BOT_TOKEN")
-DOMAIN = os.getenv("WEBHOOK_DOMAIN")
-PORT = int(os.getenv("PORT", 8000))
+# التوكن من متغيرات البيئة
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-if not TOKEN:
-    raise ValueError("BOT_TOKEN environment variable is not set!")
-if not DOMAIN:
-    raise ValueError("WEBHOOK_DOMAIN environment variable is not set!")
-if not DOMAIN.startswith("https://"):
-    raise ValueError("DOMAIN must use HTTPS!")
+if not BOT_TOKEN:
+    raise ValueError("لم يتم تعيين TELEGRAM_BOT_TOKEN في متغيرات البيئة")
 
-WEBHOOK_PATH = "/webhook"
-WEBHOOK_URL = f"{DOMAIN}{WEBHOOK_PATH}"
-
-def subscription_buttons():
-    """Generate subscription keyboard markup"""
-    buttons = [
-        [
-            InlineKeyboardButton("🧊 FREE Trial", callback_data="subscribe_free"),
-            InlineKeyboardButton("⭐ PRO ($20)", callback_data="subscribe_pro")
-        ],
-        [InlineKeyboardButton("📋 How It Works", callback_data="how_it_works")],
-        [InlineKeyboardButton("🏡 Main Menu", callback_data="main_menu")]
-    ]
-    return InlineKeyboardMarkup(buttons)
-
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handler for /start command"""
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
+        keyboard = [
+            [
+                InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro"),
+                InlineKeyboardButton("🆓 اشتراك مجاني", callback_data="subscribe_free")
+            ],
+            [
+                InlineKeyboardButton("⏬ نسخ الصفقة الآن", callback_data="copy_trade")
+            ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
         await update.message.reply_text(
-            "👋 Welcome to WhaleTap Bot!\nPlease choose a subscription plan:",
-            reply_markup=subscription_buttons()
-        )
-    except TelegramError as e:
-        logger.error(f"Failed to send start message: {e}")
-
-async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Log errors and handle them gracefully"""
-    logger.error(f"Update {update} caused error: {context.error}")
-    try:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="⚠️ An error occurred. Please try again later."
+            "🚀 مرحبًا! اختر أحد الخيارات:",
+            reply_markup=reply_markup
         )
     except Exception as e:
-        logger.error(f"Failed to send error message: {e}")
+        logger.error(f"خطأ في دالة start: {e}")
+        await update.message.reply_text("⚠️ حدث خطأ، يرجى المحاولة لاحقًا")
 
-async def main():
-    """Start the bot in webhook mode"""
-    application = Application.builder().token(TOKEN).build()
+async def handle_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
     
-    # Add handlers
-    application.add_handler(CommandHandler("start", start_command))
-    application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
-    application.add_handler(CallbackQueryHandler(handle_subscription_choice, pattern="^subscribe_"))
-    application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
+    if query.data == "subscribe_pro":
+        keyboard = [
+            [InlineKeyboardButton("💳 دفع بـ SOL", callback_data="pay_sol")],
+            [InlineKeyboardButton("💎 دفع بـ USDT", callback_data="pay_usdt")],
+            [InlineKeyboardButton("↩ رجوع", callback_data="back_to_start")]
+        ]
+        await query.edit_message_text(
+            text="اختر طريقة الدفع:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
     
-    # Add error handler
-    application.add_error_handler(error_handler)
+    elif query.data == "subscribe_free":
+        await query.edit_message_text("🎉 تم تفعيل الاشتراك المجاني بنجاح!")
 
-    # Set up webhook
-    try:
-        await application.bot.set_webhook(
-            url=WEBHOOK_URL,
-            allowed_updates=Update.ALL_TYPES
+async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    if query.data == "pay_sol":
+        await query.edit_message_text(
+            "🔷 الرجاء إرسال 20 SOL إلى العنوان:\n\n"
+            "SOL_Address_123...\n\n"
+            "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
         )
-        logger.info(f"Webhook set to {WEBHOOK_URL}")
-    except TelegramError as e:
-        logger.error(f"Failed to set webhook: {e}")
-        return
+    elif query.data == "pay_usdt":
+        await query.edit_message_text(
+            "💎 الرجاء إرسال 20 USDT (TRC20) إلى العنوان:\n\n"
+            "USDT_Address_123...\n\n"
+            "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
+        )
 
-    # Start webhook server
-    await application.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        webhook_path=WEBHOOK_PATH,
-        allowed_updates=Update.ALL_TYPES
-    )
+def main():
+    try:
+        application = Application.builder().token(BOT_TOKEN).build()
+
+        # إضافة المعالجات
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CallbackQueryHandler(handle_subscription, pattern="^subscribe_"))
+        application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
+        application.add_handler(CallbackQueryHandler(start, pattern="^back_to_start"))
+
+        logger.info("Starting the bot...")
+        application.run_polling()
+
+    except Exception as e:
+        logger.critical(f"فشل تشغيل البوت: {e}")
+        raise
 
 if __name__ == "__main__":
-    try:
-        logger.info("Starting bot...")
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info("
+    main()
