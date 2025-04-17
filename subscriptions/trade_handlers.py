@@ -1,11 +1,13 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from utils.trade_utils import save_trade_data  # تم التعديل هنا
+from utils.trade_utils import save_trade_data
 
 async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.callback_query.answer()  # لإزالة "جار التحميل"
+
     user_id = update.effective_user.id
 
-    # صفقة وهمية للتجريب (سيتم استبدالها لاحقًا ببيانات من Helius API)
+    # بيانات وهمية للصفقة
     fake_trade = {
         "wallet": "SolanaWhaleAddress111",
         "token": "BONK",
@@ -14,6 +16,7 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "timestamp": "2024-04-16 12:00:00"
     }
 
+    # حفظ الصفقة في قاعدة البيانات
     save_trade_data(
         user_id=user_id,
         wallet=fake_trade["wallet"],
@@ -23,4 +26,4 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
         timestamp=fake_trade["timestamp"]
     )
 
-    await update.message.reply_text("✅ تم حفظ صفقة الحوت بنجاح (وهمية للتجريب).")
+    await update.callback_query.message.reply_text("✅ تم حفظ صفقة الحوت بنجاح.")
