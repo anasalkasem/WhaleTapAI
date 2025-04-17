@@ -2,3 +2,4 @@ python-telegram-bot[webhooks]
 SQLAlchemy
 psycopg2-binary
 python-dotenv
+nest_asyncio
