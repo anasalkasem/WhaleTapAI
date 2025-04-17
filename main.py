@@ -1,5 +1,8 @@
 import asyncio
 import logging
+import os
+from dotenv import load_dotenv
+
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -13,6 +16,10 @@ from subscriptions.payment_handlers import (
     handle_payment
 )
 from subscriptions.keyboards import plans_keyboard
+
+# تحميل متغيرات البيئة من ملف .env
+load_dotenv()
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # إعدادات اللوج
 logging.basicConfig(
@@ -29,7 +36,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # بدء التطبيق
 async def main():
-    application = ApplicationBuilder().token("YOUR_BOT_TOKEN").build()
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
 
     # الهاندلرات
     application.add_handler(CommandHandler("start", start))
