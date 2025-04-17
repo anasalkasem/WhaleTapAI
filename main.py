@@ -1,59 +1,46 @@
 import asyncio
-import logging
 import os
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    CallbackQueryHandler,
-)
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from telegram import Update
 from telegram.ext import ContextTypes
+import nest_asyncio
 
-from subscriptions.payment_handlers import (
-    handle_subscription_choice,
-    handle_payment
-)
+from subscriptions.subscription_plans import handle_subscription_buttons
+from subscriptions.payment_handlers import handle_subscription_selection
 from subscriptions.main_menu_handler import handle_main_menu
-from subscriptions.keyboards import plans_keyboard
 
-# إعدادات اللوج
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
+TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
 
-# أمر /start
+if not TOKEN:
+    raise Exception("BOT_TOKEN is not set!")
+if not WEBHOOK_DOMAIN:
+    raise Exception("WEBHOOK_DOMAIN is not set!")
+
+WEBHOOK_PATH = "/webhook"
+WEBHOOK_URL = f"{WEBHOOK_DOMAIN.rstrip('/')}{WEBHOOK_PATH}"
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "اختر باقة الاشتراك:",
-        reply_markup=plans_keyboard()
+        reply_markup=await handle_subscription_buttons()
     )
 
-# بدء التطبيق
 async def main():
-    TOKEN = os.getenv("BOT_TOKEN")
-    DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # تأكد من إضافته في Railway
+    application = Application.builder().token(TOKEN).build()
 
-    print("DOMAIN =", DOMAIN)  # للتأكد من القيمة
-    if not DOMAIN:
-        raise Exception("WEBHOOK_DOMAIN is not set!")
-
-    application = ApplicationBuilder().token(TOKEN).build()
-
-    # الهاندلرات
+    # هنا يتم ربط الأوامر
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(handle_subscription_choice, pattern="^subscribe_"))
-    application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
+    application.add_handler(CallbackQueryHandler(handle_subscription_selection, pattern="^subscribe_"))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
 
-    # إعداد Webhook
-    await application.bot.set_webhook(f"{DOMAIN}/webhook")
+    # تهيئة البوت للعمل مع Webhook
+    await application.initialize()
+    await application.bot.set_webhook(WEBHOOK_URL)
     await application.start()
     await application.updater.start_polling()
     await application.updater.idle()
 
-# تنفيذ البوت
 if __name__ == "__main__":
-    import nest_asyncio
     nest_asyncio.apply()
     asyncio.run(main())
