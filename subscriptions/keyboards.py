@@ -8,13 +8,11 @@ def plans_keyboard():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-
 def crypto_payment_keyboard(plan: str):
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("💠 → دفع SOL", callback_data=f"pay_sol:{plan}")],
         [InlineKeyboardButton("💎 → دفع USDT", callback_data=f"pay_usdt:{plan}")]
     ])
-
 
 def main_menu_keyboard():
     return InlineKeyboardMarkup([
