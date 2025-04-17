@@ -7,7 +7,6 @@ from subscriptions.keyboards import plans_keyboard
 from subscriptions.payment_handlers import handle_payment
 from subscriptions.trade_handlers import handle_copy_trade
 
-# ضع معرفك هنا (Telegram User ID الخاص بك كأدمن)
 ADMIN_ID = 6672291052
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -31,14 +30,22 @@ async def activate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"حدث خطأ: {str(e)}")
 
 def main():
-    app = Application.builder().token(os.getenv("TOKEN")).build()
+    TOKEN = os.getenv("TOKEN")
+    DOMAIN = os.getenv("DOMAIN")  # يجب أن تضيفه في متغيرات Railway
+    PORT = int(os.environ.get('PORT', 8443))
+
+    app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("activate", activate))
     app.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
     app.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
-    app.run_polling()
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        webhook_url=f"{DOMAIN}/webhook/{TOKEN}"
+    )
 
 if __name__ == "__main__":
     main()
