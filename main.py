@@ -1,13 +1,22 @@
-import os
+import asyncio
 import logging
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
-from subscriptions.payment_handlers import handle_subscription_choice, handle_payment
-from subscriptions.main_menu_handler import handle_main_menu
-from subscriptions.keyboards import plans_keyboard
+import os
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+)
 from telegram import Update
 from telegram.ext import ContextTypes
 
-# إعداد اللوج
+from subscriptions.payment_handlers import (
+    handle_subscription_choice,
+    handle_payment
+)
+from subscriptions.main_menu_handler import handle_main_menu
+from subscriptions.keyboards import plans_keyboard
+
+# إعدادات اللوج
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
@@ -20,13 +29,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=plans_keyboard()
     )
 
-# بدء التطبيق باستخدام Webhook
+# بدء التطبيق
 async def main():
-    from dotenv import load_dotenv
-    load_dotenv()
     TOKEN = os.getenv("BOT_TOKEN")
-    DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثل: https://your-app-name.up.railway.app
-    PORT = int(os.environ.get("PORT", 8443))
+    DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # تأكد من إضافته في Railway
+
+    print("DOMAIN =", DOMAIN)  # للتأكد من القيمة
+    if not DOMAIN:
+        raise Exception("WEBHOOK_DOMAIN is not set!")
 
     application = ApplicationBuilder().token(TOKEN).build()
 
@@ -36,20 +46,14 @@ async def main():
     application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
 
-    # Webhook settings
-    await application.initialize()
+    # إعداد Webhook
     await application.bot.set_webhook(f"{DOMAIN}/webhook")
     await application.start()
-    await application.updater.start_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path="webhook",
-        webhook_url=f"{DOMAIN}/webhook"
-    )
+    await application.updater.start_polling()
+    await application.updater.idle()
 
-# التشغيل
+# تنفيذ البوت
 if __name__ == "__main__":
-    import asyncio
     import nest_asyncio
     nest_asyncio.apply()
     asyncio.run(main())
