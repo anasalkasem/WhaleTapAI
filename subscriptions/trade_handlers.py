@@ -3,6 +3,8 @@ from telegram.ext import ContextTypes
 from utils.trade_utils import save_trade_data
 
 async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print("تم الضغط على زر نسخ الصفقة")  # للمراقبة من Railway
+
     await update.callback_query.answer()  # لإزالة "جار التحميل"
 
     user_id = update.effective_user.id
@@ -26,4 +28,4 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
         timestamp=fake_trade["timestamp"]
     )
 
-    await update.callback_query.message.reply_text("✅ تم حفظ صفقة الحوت بنجاح.")
+    await update.callback_query.message.reply_text("✅ تم حفظ صفقة الحوت بنجاح (وهمية للتجريب).")
