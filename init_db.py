@@ -1,25 +1,24 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, MetaData, Table
-from datetime import datetime
+# init_db.py
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
+from models.models import Base
 import os
+from dotenv import load_dotenv
 
-# إعداد الاتصال بقاعدة البيانات (استخدم env في Railway)
-db_url = os.getenv("DATABASE_URL", "sqlite:///whaletap.db")
-engine = create_engine(db_url)
-metadata = MetaData()
+load_dotenv()
 
-# إنشاء جدول الاشتراكات
-subscriptions = Table(
-    'subscriptions',
-    metadata,
-    Column('id', Integer, primary_key=True),
-    Column('user_id', Integer, nullable=False),
-    Column('plan', String, nullable=False),  # مثل: "PRO" أو "FREE"
-    Column('is_active', Boolean, default=False),
-    Column('created_at', DateTime, default=datetime.utcnow),
-    Column('expires_at', DateTime, nullable=True),
-)
+# تأكد أن متغير DATABASE_URL موجود في .env
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# تنفيذ الإنشاء
-metadata.create_all(engine)
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL not found in environment variables")
 
-print("تم إنشاء الجدول بنجاح.")
+# إنشاء الاتصال بقاعدة البيانات
+engine = create_engine(DATABASE_URL)
+
+# حذف الجداول القديمة وإنشاء جديدة (اختياري)
+Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
+
+print("✅ تم تهيئة قاعدة البيانات بنجاح.")
