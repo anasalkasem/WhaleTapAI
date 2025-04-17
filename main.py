@@ -1,65 +1,104 @@
 import os
 import asyncio
 import nest_asyncio
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-from subscriptions.payment_handlers import handle_payment, handle_subscription_choice
-from subscriptions.main_menu_handler import handle_main_menu
-from subscriptions.subscription_plans import PLANS
-from telegram import Update
-from telegram.ext import ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.error import TelegramError
+import logging
 
+# Apply nest_asyncio for async environments
 nest_asyncio.apply()
 
+# Set up logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+# Environment variables
 TOKEN = os.getenv("BOT_TOKEN")
 DOMAIN = os.getenv("WEBHOOK_DOMAIN")
+PORT = int(os.getenv("PORT", 8000))
 
 if not TOKEN:
-    raise Exception("BOT_TOKEN is not set!")
-
+    raise ValueError("BOT_TOKEN environment variable is not set!")
 if not DOMAIN:
-    raise Exception("WEBHOOK_DOMAIN is not set!")
+    raise ValueError("WEBHOOK_DOMAIN environment variable is not set!")
+if not DOMAIN.startswith("https://"):
+    raise ValueError("DOMAIN must use HTTPS!")
 
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{DOMAIN}{WEBHOOK_PATH}"
 
-
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 مرحباً بك في بوت WhaleTap.\nيرجى اختيار باقة الاشتراك:",
-        reply_markup=subscription_buttons()
-    )
-
-
 def subscription_buttons():
-    from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
+    """Generate subscription keyboard markup"""
     buttons = [
         [
-            InlineKeyboardButton("نسخة تجريبية 🧊 FREE", callback_data="subscribe_free"),
-            InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro")
+            InlineKeyboardButton("🧊 FREE Trial", callback_data="subscribe_free"),
+            InlineKeyboardButton("⭐ PRO ($20)", callback_data="subscribe_pro")
         ],
-        [InlineKeyboardButton("📋 كيف يعمل البوت؟", callback_data="how_it_works")],
-        [InlineKeyboardButton("🏡 القائمة الرئيسية", callback_data="main_menu")]
+        [InlineKeyboardButton("📋 How It Works", callback_data="how_it_works")],
+        [InlineKeyboardButton("🏡 Main Menu", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(buttons)
 
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handler for /start command"""
+    try:
+        await update.message.reply_text(
+            "👋 Welcome to WhaleTap Bot!\nPlease choose a subscription plan:",
+            reply_markup=subscription_buttons()
+        )
+    except TelegramError as e:
+        logger.error(f"Failed to send start message: {e}")
+
+async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Log errors and handle them gracefully"""
+    logger.error(f"Update {update} caused error: {context.error}")
+    try:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="⚠️ An error occurred. Please try again later."
+        )
+    except Exception as e:
+        logger.error(f"Failed to send error message: {e}")
 
 async def main():
+    """Start the bot in webhook mode"""
     application = Application.builder().token(TOKEN).build()
-
-    # Handlers
+    
+    # Add handlers
     application.add_handler(CommandHandler("start", start_command))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_choice, pattern="^subscribe_"))
     application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
+    
+    # Add error handler
+    application.add_error_handler(error_handler)
 
-    # Webhook config
-    await application.bot.set_webhook(url=WEBHOOK_URL)
-    print(f"DOMAIN = {DOMAIN}")
-    await application.initialize()
-    await application.start()
-    await application.run_polling()  # أو استخدم await application.run_webhook(...) لو أردت webhook فقط
+    # Set up webhook
+    try:
+        await application.bot.set_webhook(
+            url=WEBHOOK_URL,
+            allowed_updates=Update.ALL_TYPES
+        )
+        logger.info(f"Webhook set to {WEBHOOK_URL}")
+    except TelegramError as e:
+        logger.error(f"Failed to set webhook: {e}")
+        return
 
+    # Start webhook server
+    await application.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        webhook_path=WEBHOOK_PATH,
+        allowed_updates=Update.ALL_TYPES
+    )
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        logger.info("Starting bot...")
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("
