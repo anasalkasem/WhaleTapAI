@@ -50,10 +50,11 @@ async def handle_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE
         ]
         await query.edit_message_text(
             text="اختر طريقة الدفع:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-    
+            reply_markup=InlineKeyboardMarkup(keyboard)  # ← القوس كان ناقص هون
+        )
+
     elif query.data == "subscribe_free":
-        await query.edit_message_text("🎉 تم تفعيل الاشتراك المجاني بنجاح!")
+        await query.edit_message_text(text="🎉 تم تفعيل الاشتراك المجاني بنجاح!")
 
 async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -61,16 +62,19 @@ async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if query.data == "pay_sol":
         await query.edit_message_text(
-            "🔷 الرجاء إرسال 20 SOL إلى العنوان:\n\n"
-            "SOL_Address_123...\n\n"
-            "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
+            text="🔷 الرجاء إرسال 20 SOL إلى العنوان:\n\n"
+                 "SOL_Address_123...\n\n"
+                 "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
         )
     elif query.data == "pay_usdt":
         await query.edit_message_text(
-            "💎 الرجاء إرسال 20 USDT (TRC20) إلى العنوان:\n\n"
-            "USDT_Address_123...\n\n"
-            "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
+            text="💎 الرجاء إرسال 20 USDT (TRC20) إلى العنوان:\n\n"
+                 "USDT_Address_123...\n\n"
+                 "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
         )
+
+async def handle_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
 
 def main():
     try:
@@ -80,7 +84,7 @@ def main():
         application.add_handler(CommandHandler("start", start))
         application.add_handler(CallbackQueryHandler(handle_subscription, pattern="^subscribe_"))
         application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
-        application.add_handler(CallbackQueryHandler(start, pattern="^back_to_start"))
+        application.add_handler(CallbackQueryHandler(handle_back, pattern="^back_to_start$"))
 
         logger.info("Starting the bot...")
         application.run_polling()
