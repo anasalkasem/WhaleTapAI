@@ -4,7 +4,7 @@ def plans_keyboard():
     keyboard = [
         [InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro")],
         [InlineKeyboardButton("🆓 اشتراك مجاني (1 صفقة/يوم)", callback_data="subscribe_free")],
-        [InlineKeyboardButton("⏬ نسخ الصفقة الآن", callback_data="copy_trade")]  # تم التعديل هنا
+        [InlineKeyboardButton("⏬ نسخ الصفقة الآن", callback_data="copy_trade")]
     ]
     return InlineKeyboardMarkup(keyboard)
 
