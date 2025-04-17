@@ -1,61 +1,45 @@
+import asyncio
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
-from subscriptions.subscription_handlers import handle_subscription_choice
-from subscriptions.payment_handlers import handle_payment
-from subscriptions.trade_handlers import handle_copy_trade
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+)
+from telegram import Update
+from telegram.ext import ContextTypes
 
-# إعداد اللوجر
+from subscriptions.payment_handlers import (
+    handle_subscription_choice,
+    handle_payment
+)
+from subscriptions.keyboards import plans_keyboard
+
+# إعدادات اللوج
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
-logger = logging.getLogger(__name__)
 
-# التوكن - الأفضل استخدام متغيرات البيئة
-BOT_TOKEN = "YOUR_BOT_TOKEN"  # استبدلها بالتوكن الفعلي
-
+# أمر /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    try:
-        keyboard = [
-            [
-                InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro"),
-                InlineKeyboardButton("🆓 اشتراك مجاني", callback_data="subscribe_free")
-            ],
-            [
-                InlineKeyboardButton("⏬ نسخ الصفقة الآن", callback_data="copy_trade")
-            ]
-        ]
-        
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        await update.message.reply_text(
-            "🚀 اختر باقة الاشتراك المناسبة:",
-            reply_markup=reply_markup
-        )
-    except Exception as e:
-        logger.error(f"Error in start handler: {e}")
-        await update.message.reply_text("⚠️ حدث خطأ، يرجى المحاولة لاحقًا")
+    await update.message.reply_text(
+        "اختر باقة الاشتراك:",
+        reply_markup=plans_keyboard()
+    )
 
-def main():
-    try:
-        if not BOT_TOKEN or BOT_TOKEN == "YOUR_BOT_TOKEN":
-            raise ValueError("لم يتم تعيين توكن البوت")
-        
-        application = Application.builder().token(BOT_TOKEN).build()
+# بدء التطبيق
+async def main():
+    application = ApplicationBuilder().token("YOUR_BOT_TOKEN").build()
 
-        # إضافة المعالجات
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CallbackQueryHandler(handle_subscription_choice, pattern=r"^subscribe_(pro|free)$"))
-        application.add_handler(CallbackQueryHandler(handle_payment, pattern=r"^pay_(sol|usdt)_"))
-        application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
+    # الهاندلرات
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(handle_subscription_choice, pattern="^subscribe_"))
+    application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
 
-        logger.info("Starting bot...")
-        application.run_polling()
+    await application.run_polling()
 
-    except Exception as e:
-        logger.critical(f"Bot failed: {e}")
-        raise
-
+# تنفيذ البوت
 if __name__ == "__main__":
-    main()
+    import nest_asyncio
+    nest_asyncio.apply()
+    asyncio.run(main())
