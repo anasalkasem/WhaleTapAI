@@ -1,13 +1,13 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from .db_utils import save_trade_data
+from utils.trade_utils import save_trade_data  # تم التعديل هنا
 
 async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
-    # صفقة وهمية للتجريب (ستُستبدل لاحقًا ببيانات من Helius API)
+    # صفقة وهمية للتجريب (سيتم استبدالها لاحقًا ببيانات من Helius API)
     fake_trade = {
-        "wallet": "So1anaWhaleAddress111",
+        "wallet": "SolanaWhaleAddress111",
         "token": "BONK",
         "amount": 9543.22,
         "tx_type": "buy",
@@ -23,4 +23,4 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
         timestamp=fake_trade["timestamp"]
     )
 
-    await update.message.reply_text("✅ تم نسخ صفقة الحوت (وهمية). سيتم استخدام بيانات حقيقية لاحقًا.")
+    await update.message.reply_text("✅ تم حفظ صفقة الحوت بنجاح (وهمية للتجريب).")
