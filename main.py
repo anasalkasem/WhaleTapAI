@@ -1,21 +1,18 @@
 import asyncio
 import logging
 import os
-from dotenv import load_dotenv
-
-from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     CallbackQueryHandler,
-    ContextTypes
 )
+from telegram import Update
+from telegram.ext import ContextTypes
 
-# تحميل متغيرات البيئة
-load_dotenv()
-
+# استيراد الوظائف من الملفات الداخلية
 from subscriptions.payment_handlers import handle_subscription_choice, handle_payment
 from subscriptions.main_menu_handler import handle_main_menu
+from subscriptions.how_it_works_handler import handle_how_it_works
 from subscriptions.keyboards import plans_keyboard
 
 # إعدادات اللوج
@@ -33,13 +30,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # بدء التطبيق
 async def main():
-    application = ApplicationBuilder().token(os.getenv("BOT_TOKEN")).build()
+    # جلب التوكن من متغير البيئة
+    TOKEN = os.getenv("BOT_TOKEN")
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN غير موجود في .env")
+
+    application = ApplicationBuilder().token(TOKEN).build()
 
     # الهاندلرات
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(handle_subscription_choice, pattern="^subscribe_"))
     application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
+    application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
 
     await application.run_polling()
 
