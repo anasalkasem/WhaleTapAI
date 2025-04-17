@@ -7,6 +7,13 @@ from subscriptions.keyboards import plans_keyboard
 from subscriptions.payment_handlers import handle_payment
 from subscriptions.trade_handlers import handle_copy_trade
 
+# Telegram Bot Token & Webhook URL
+BOT_TOKEN = os.getenv("TOKEN")
+WEBHOOK_DOMAIN = os.getenv("DOMAIN")  # مثال: https://web-production-xxxx.up.railway.app
+WEBHOOK_PATH = f"/{BOT_TOKEN}"
+WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
+
+# Admin ID
 ADMIN_ID = 6672291052
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -30,11 +37,7 @@ async def activate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"حدث خطأ: {str(e)}")
 
 def main():
-    TOKEN = os.getenv("TOKEN")
-    DOMAIN = os.getenv("DOMAIN")  # يجب أن تضيفه في متغيرات Railway
-    PORT = int(os.environ.get('PORT', 8443))
-
-    app = Application.builder().token(TOKEN).build()
+    app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("activate", activate))
@@ -43,8 +46,8 @@ def main():
 
     app.run_webhook(
         listen="0.0.0.0",
-        port=PORT,
-        webhook_url=f"{DOMAIN}/webhook/{TOKEN}"
+        port=int(os.environ.get("PORT", 8000)),
+        webhook_url=WEBHOOK_URL
     )
 
 if __name__ == "__main__":
