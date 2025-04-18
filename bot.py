@@ -32,3 +32,12 @@ from subscriptions.settings_handler import handle_settings
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
 from subscriptions.insights_handler import handle_smart_insights
 application.add_handler(CallbackQueryHandler(handle_smart_insights, pattern="^smart_insights$"))
+from subscriptions.settings_handler import (
+    handle_settings,
+    handle_change_language,
+    handle_language_selection
+)
+
+application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
+application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
+application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
