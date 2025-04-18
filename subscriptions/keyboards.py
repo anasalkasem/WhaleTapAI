@@ -102,3 +102,12 @@ def settings_keyboard(lang="ar"):
             [InlineKeyboardButton("🌐 تغيير اللغة", callback_data="change_language")],
             [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
         ])
+def language_selection_keyboard():
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🇸🇦 العربية", callback_data="lang_ar"),
+            InlineKeyboardButton("🇺🇸 English", callback_data="lang_en"),
+            InlineKeyboardButton("🇪🇸 Español", callback_data="lang_es"),
+        ],
+        [InlineKeyboardButton("↩️ رجوع", callback_data="settings")]
+    ])
