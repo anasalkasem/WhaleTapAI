@@ -33,3 +33,16 @@ async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_T
         text="🌐 اختر لغتك المفضلة:",
         reply_markup=keyboard
     )
+# حفظ اللغة المختارة مؤقتاً في context.user_data
+async def handle_language_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    lang_code = query.data.split("_")[1]
+    context.user_data["lang"] = lang_code
+
+    lang_name = {"en": "English", "ar": "العربية", "es": "Español"}.get(lang_code, "English")
+
+    await query.edit_message_text(
+        text=f"✅ تم تغيير اللغة إلى: {lang_name}\n\n(التأثير الكامل سيتم تطبيقه قريبًا.)"
+    )
