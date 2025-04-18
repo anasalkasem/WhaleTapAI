@@ -51,3 +51,20 @@ async def handle_language_selection(update: Update, context: ContextTypes.DEFAUL
     await query.edit_message_text(
         text=f"✅ تم تغيير اللغة إلى: {lang_name}\n\n(التأثير الكامل سيتم تطبيقه قريبًا.)"
     )
+# دالة تفعيل/إلغاء التنبيهات
+async def handle_toggle_notifications(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    lang = context.user_data.get("lang", "ar")
+    current_status = context.user_data.get("notifications_enabled", True)
+
+    # تبديل الحالة
+    context.user_data["notifications_enabled"] = not current_status
+
+    if lang == "en":
+        text = "🔔 Notifications have been turned " + ("off." if current_status else "on.")
+    elif lang == "es":
+        text = "🔔 Las notificaciones han sido " + ("desactivadas." if current_status else "activadas.")
+    else:
+        text = "🔔 تم " + ("إيقاف" if current_status else "تفعيل") + " التنبيهات."
+
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text(text=text)
