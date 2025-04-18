@@ -25,3 +25,15 @@ async def handle_pay_usdt(update: Update, context: ContextTypes.DEFAULT_TYPE):
              f"📌 بعد التحويل، أرسل صورة أو Hash المعاملة لتأكيد التفعيل.",
         parse_mode="Markdown"
     )
+# تفعيل النسخة المجانية
+async def handle_free_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text(
+        text=f"🆓 تم تفعيل النسخة المجانية بنجاح!\n\n"
+             f"مرحباً {user.first_name}، يمكنك الآن نسخ صفقة واحدة يومياً.\n"
+             f"قم بالترقية لاحقاً للاستفادة الكاملة من المميزات.",
+    )
+
+    # (اختياري) أضف المستخدم إلى قاعدة البيانات كـ "Free"
