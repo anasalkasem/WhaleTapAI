@@ -14,3 +14,16 @@ class WhaleTrade(Base):
     amount = Column(Float, nullable=False)
     trade_type = Column(String, nullable=False)  # buy أو sell
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+from sqlalchemy import Column, Integer, String, BigInteger, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+import datetime
+
+Base = declarative_base()
+
+class Subscription(Base):
+    __tablename__ = 'subscriptions'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger, nullable=False, unique=True)
+    plan_type = Column(String, nullable=False)  # 'free' أو 'pro'
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
