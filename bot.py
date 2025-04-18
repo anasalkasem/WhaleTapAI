@@ -17,6 +17,7 @@ from subscriptions.settings_handler import (
     handle_language_selection
 )
 from subscriptions.insights_handler import handle_smart_insights
+from subscriptions.how_handler import handle_how_it_works  # ← الجديد
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -45,6 +46,9 @@ def main():
     # الإحصائيات والرؤية الذكية
     application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
     application.add_handler(CallbackQueryHandler(handle_smart_insights, pattern="^smart_insights$"))
+
+    # كيف يعمل البوت؟
+    application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
 
     # تشغيل البوت
     application.run_polling()
