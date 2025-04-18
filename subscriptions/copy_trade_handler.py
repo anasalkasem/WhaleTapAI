@@ -1,7 +1,8 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from subscriptions.keyboards import main_menu_keyboard
-from models.database import Session  # تعديل الاستيراد الصحيح
+from models.database import Session, WhaleTrade  # استيراد النموذج وجلسة القاعدة
+import datetime
 
 # دالة تنفيذ نسخ صفقة الحوت
 async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -12,7 +13,20 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # إنشاء جلسة قاعدة البيانات
     session = Session()
 
-    # (هنا ممكن لاحقاً تضيف كود حفظ صفقة في قاعدة البيانات)
+    # إنشاء صفقة وهمية
+    fake_trade = WhaleTrade(
+        user_id=user_id,
+        whale_wallet="whale_fake_wallet_123",
+        token_address="token_fake_address_456",
+        amount=12345.67,
+        trade_type="buy",  # أو "sell"
+        timestamp=datetime.datetime.utcnow()
+    )
+
+    # حفظها بالقاعدة
+    session.add(fake_trade)
+    session.commit()
+    session.close()
 
     # رسالة التأكيد
     if lang == "en":
