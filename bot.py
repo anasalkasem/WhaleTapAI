@@ -51,3 +51,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+from subscriptions.settings_handler import handle_settings
+
+application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
