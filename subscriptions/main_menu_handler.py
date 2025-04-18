@@ -54,3 +54,5 @@ async def handle_back_to_plans(update: Update, context: ContextTypes.DEFAULT_TYP
         text=text,
         reply_markup=plans_keyboard()
     )
+lang = context.user_data.get("lang", "ar")
+keyboard = main_menu_keyboard(lang)
