@@ -13,7 +13,7 @@ async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         text = "🚀 <b>مرحباً بك في WhaleTap!</b>\nاختر خياراً للبدء."
 
-    keyboard = main_menu_keyboard(lang)  # <== التصحيح هنا
+    keyboard = main_menu_keyboard(lang)  # ← استخدم اللغة هنا
 
     if update.message:
         await update.message.reply_text(text, reply_markup=keyboard, parse_mode="HTML")
@@ -35,7 +35,7 @@ async def handle_subscription_info(update: Update, context: ContextTypes.DEFAULT
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
         text=text,
-        reply_markup=plans_keyboard(lang)
+        reply_markup=plans_keyboard(lang)  # ← استخدم اللغة هنا
     )
 
 # الرجوع إلى خطط الاشتراك
@@ -52,5 +52,5 @@ async def handle_back_to_plans(update: Update, context: ContextTypes.DEFAULT_TYP
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
         text=text,
-        reply_markup=plans_keyboard(lang)
+        reply_markup=plans_keyboard(lang)  # ← استخدم اللغة هنا
     )
