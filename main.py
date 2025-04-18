@@ -1,56 +1,41 @@
-import os
-import logging
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import Message
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.enums import ParseMode
+from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiohttp import web
 import asyncio
 import nest_asyncio
-from telegram import Update
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-)
+import logging
 
-from subscriptions.main_menu_handler import handle_main_menu
-from subscriptions.copy_trade_handler import handle_copy_trade
-from subscriptions.auto_trading_handlers import handle_auto_trading, handle_stop_copying
+from handlers.main_menu import handle_main_menu
+from handlers.copy_trade import handle_copy_trade
 
-# إعداد اللوجر
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# تحميل التوكن والدومين من البيئة
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
-
-if not TOKEN:
-    raise ValueError("لم يتم تعيين TELEGRAM_BOT_TOKEN في متغيرات البيئة")
-
-if not WEBHOOK_DOMAIN:
-    raise ValueError("لم يتم تعيين WEBHOOK_DOMAIN في متغيرات البيئة")
-
+API_TOKEN = "YOUR_BOT_TOKEN"
 WEBHOOK_PATH = "/webhook"
-WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
+WEBHOOK_URL = f"https://your-app-url.railway.app{WEBHOOK_PATH}"
 
-# دالة بدء البوت
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await handle_main_menu(update, context)
+nest_asyncio.apply()
+logging.basicConfig(level=logging.INFO)
 
-# الدالة الرئيسية لتشغيل البوت
-async def main():
-    application = Application.builder().token(TOKEN).build()
+async def on_startup(bot: Bot) -> None:
+    await bot.set_webhook(WEBHOOK_URL)
 
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
-    application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
-    application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
-    application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
+def create_app():
+    session = AiohttpSession()
+    bot = Bot(token=API_TOKEN, session=session, parse_mode=ParseMode.HTML)
+    dp = Dispatcher(storage=MemoryStorage())
 
-    logger.info(f"Using Webhook URL: {WEBHOOK_URL}")
-    await application.initialize()
-    await application.start()
-    await application.bot.set_webhook(url=WEBHOOK_URL)
+    dp.message.register(handle_main_menu, commands={"start"})
+    dp.message.register(handle_copy_trade, lambda msg: msg.text == "📥 Copy Latest Trade")
 
-# تشغيل البوت
+    app = web.Application()
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
+    app.on_startup.append(lambda app: on_startup(bot))
+    return app
+
+app = create_app()
+
 if __name__ == "__main__":
-    nest_asyncio.apply()
-    asyncio.get_event_loop().run_until_complete(main())
+    web.run_app(app, port=int(os.getenv("PORT", 8000)))
