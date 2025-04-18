@@ -15,7 +15,7 @@ from subscriptions.settings_handler import (
     handle_settings,
     handle_change_language,
     handle_language_selection,
-    handle_toggle_notifications  # تمت الإضافة هنا
+    handle_toggle_notifications,  # تمت إضافتها
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_handler import handle_how_it_works
@@ -40,11 +40,11 @@ def main():
     # الدفع بـ SOL فقط
     application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
 
-    # الإعدادات واللغة
+    # الإعدادات واللغة والتنبيهات
     application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
     application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
     application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
-    application.add_handler(CallbackQueryHandler(handle_toggle_notifications, pattern="^toggle_notifications$"))  # تمت الإضافة هنا
+    application.add_handler(CallbackQueryHandler(handle_toggle_notifications, pattern="^toggle_notifications$"))
 
     # الإحصائيات والرؤية الذكية
     application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
