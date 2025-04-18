@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from subscriptions.keyboards import settings_keyboard, language_selection_keyboard
 
-# عرض قائمة الإعدادات
+# دالة عرض قائمة الإعدادات
 async def handle_settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data.get("lang", "ar")
 
@@ -22,7 +22,7 @@ async def handle_settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# عرض اختيار اللغة
+# دالة اختيار اللغة
 async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
@@ -30,7 +30,7 @@ async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_T
         reply_markup=language_selection_keyboard()
     )
 
-# حفظ اللغة المختارة
+# دالة حفظ اللغة المختارة
 async def handle_language_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
