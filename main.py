@@ -15,11 +15,11 @@ from subscriptions.settings_handler import (
     handle_settings,
     handle_change_language,
     handle_language_selection,
-    handle_toggle_notifications,  # تمت إضافتها
+    handle_toggle_notifications,
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
-from subscriptions.copy_trade_handler import handle_copy_trade
+from subscriptions.copy_trade_handler import handle_copy_trade  # هذا هو التعديل
 
 TOKEN = os.getenv("BOT_TOKEN")
 
