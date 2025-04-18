@@ -13,7 +13,8 @@ async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         text = "🚀 <b>مرحباً بك في WhaleTap!</b>\nاختر خياراً للبدء."
 
-    keyboard = main_menu_keyboard(lang)  # ← استخدم اللغة هنا
+    lang = context.user_data.get("lang", "ar")
+keyboard = main_menu_keyboard(lang)  # ← استخدم اللغة هنا
 
     if update.message:
         await update.message.reply_text(text, reply_markup=keyboard, parse_mode="HTML")
