@@ -54,3 +54,10 @@ if __name__ == "__main__":
 from subscriptions.settings_handler import handle_settings
 
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
+from subscriptions.settings_handler import (
+    handle_change_language,
+    handle_language_selection
+)
+
+application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
+application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
