@@ -1,8 +1,3 @@
-from aiogram.types import Message
-
-async def handle_copy_trade(message: Message):
-    await message.answer("✅ Trade copied successfully!
-We'll notify you when similar trades happen.")
 from telegram import Update
 from telegram.ext import ContextTypes
 from database import SessionLocal
@@ -17,12 +12,12 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
     fake_trade = WhaleTrade(
         user_id=user.id,
         whale_wallet="3xWhaleSOLwallet999",
-        token_address="So11111111111111111111111111111111111111112",  # عنوان توكن SOL
+        token_address="So11111111111111111111111111111111111111112",
         amount=2.5,
         trade_type="buy"
     )
 
-    # حفظها بقاعدة البيانات
+    # حفظها في قاعدة البيانات
     db = SessionLocal()
     db.add(fake_trade)
     db.commit()
