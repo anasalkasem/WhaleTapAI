@@ -30,3 +30,5 @@ from subscriptions.stats_handler import handle_my_stats
 application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
 from subscriptions.settings_handler import handle_settings
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
+from subscriptions.insights_handler import handle_smart_insights
+application.add_handler(CallbackQueryHandler(handle_smart_insights, pattern="^smart_insights$"))
