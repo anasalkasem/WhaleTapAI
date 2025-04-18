@@ -40,11 +40,10 @@ async def main():
 
     logger.info(f"Using Webhook URL: {WEBHOOK_URL}")
     await application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.getenv("PORT", 8443)),
-        webhook_path=WEBHOOK_PATH,
-        url=WEBHOOK_URL,
-    )
+    listen="0.0.0.0",
+    port=int(os.getenv("PORT", 8443)),
+    url=WEBHOOK_URL,
+)
 
 if __name__ == "__main__":
     nest_asyncio.apply()
