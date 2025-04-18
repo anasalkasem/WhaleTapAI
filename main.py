@@ -10,12 +10,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# التوكن الصحيح من متغيرات البيئة
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+# التوكن من متغيرات البيئة
+BOT_TOKEN = os.getenv("BOT_TOKEN")  # ← التعديل هنا
+
 if not BOT_TOKEN:
     raise ValueError("لم يتم تعيين BOT_TOKEN في متغيرات البيئة")
 
-# دالة /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         keyboard = [
@@ -27,8 +27,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton("⏬ نسخ الصفقة الآن", callback_data="copy_trade")
             ]
         ]
+        
         reply_markup = InlineKeyboardMarkup(keyboard)
-
+        
         await update.message.reply_text(
             "🚀 مرحبًا! اختر أحد الخيارات:",
             reply_markup=reply_markup
@@ -37,11 +38,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.error(f"خطأ في دالة start: {e}")
         await update.message.reply_text("⚠️ حدث خطأ، يرجى المحاولة لاحقًا")
 
-# اختيار الاشتراك
 async def handle_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
+    
     if query.data == "subscribe_pro":
         keyboard = [
             [InlineKeyboardButton("💳 دفع بـ SOL", callback_data="pay_sol")],
@@ -56,11 +56,10 @@ async def handle_subscription(update: Update, context: ContextTypes.DEFAULT_TYPE
     elif query.data == "subscribe_free":
         await query.edit_message_text(text="🎉 تم تفعيل الاشتراك المجاني بنجاح!")
 
-# عملية الدفع
 async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
+    
     if query.data == "pay_sol":
         await query.edit_message_text(
             text="🔷 الرجاء إرسال 20 SOL إلى العنوان:\n\n"
@@ -74,16 +73,14 @@ async def handle_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
                  "✅ سيتم تفعيل اشتراكك خلال 10 دقائق من التأكيد"
         )
 
-# زر الرجوع
 async def handle_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await start(update, context)
 
-# تشغيل البوت
 def main():
     try:
         application = Application.builder().token(BOT_TOKEN).build()
 
-        # المعالجات
+        # إضافة المعالجات
         application.add_handler(CommandHandler("start", start))
         application.add_handler(CallbackQueryHandler(handle_subscription, pattern="^subscribe_"))
         application.add_handler(CallbackQueryHandler(handle_payment, pattern="^pay_"))
@@ -91,6 +88,7 @@ def main():
 
         logger.info("Starting the bot...")
         application.run_polling()
+
     except Exception as e:
         logger.critical(f"فشل تشغيل البوت: {e}")
         raise
