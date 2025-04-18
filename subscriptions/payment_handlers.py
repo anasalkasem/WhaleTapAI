@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-# عرض عنوان محفظة الدفع بـ SOL (مترجمة)
+# عرض عنوان محفظة الدفع بـ SOL (مترجم)
 async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -34,7 +34,7 @@ async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE
     await query.edit_message_text(text=text, parse_mode="HTML")
 
 
-# تفعيل النسخة المجانية (مترجمة)
+# تفعيل النسخة المجانية (مترجم)
 async def handle_free_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     lang = context.user_data.get("lang", "ar")
