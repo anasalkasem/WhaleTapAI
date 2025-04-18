@@ -23,16 +23,34 @@ async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # الاشتراك
 async def handle_subscription_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    lang = context.user_data.get("lang", "ar")
+
+    if lang == "en":
+        text = "💳 Choose your subscription plan:"
+    elif lang == "es":
+        text = "💳 Elige tu plan de suscripción:"
+    else:
+        text = "💳 اختر نوع الاشتراك المناسب لك:"
+
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
-        text="💳 اختر نوع الاشتراك المناسب لك:",
+        text=text,
         reply_markup=plans_keyboard()
     )
 
-# الرجوع لخطط الاشتراك
+# الرجوع إلى خطط الاشتراك
 async def handle_back_to_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    lang = context.user_data.get("lang", "ar")
+
+    if lang == "en":
+        text = "💳 Back to subscription plans:"
+    elif lang == "es":
+        text = "💳 Volver a los planes de suscripción:"
+    else:
+        text = "💳 الرجوع لاختيار نوع الاشتراك:"
+
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
-        text="💳 الرجوع لاختيار نوع الاشتراك:",
+        text=text,
         reply_markup=plans_keyboard()
     )
