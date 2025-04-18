@@ -38,14 +38,14 @@ async def main():
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
-    # تشغيل البوت باستخدام Webhook
     logger.info(f"Using Webhook URL: {WEBHOOK_URL}")
-    await application.initialize()
-    await application.start()
-    await application.bot.set_webhook(url=WEBHOOK_URL)
-    await application.updater.start_polling()  # بديل آمن لتفادي خطأ event loop
+    await application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.getenv("PORT", 8443)),
+        webhook_path=WEBHOOK_PATH,
+        url=WEBHOOK_URL,
+    )
 
-# تشغيل فعلي
 if __name__ == "__main__":
     nest_asyncio.apply()
     asyncio.get_event_loop().run_until_complete(main())
