@@ -28,3 +28,5 @@ from subscriptions.payment_handlers import handle_free_plan
 application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
 from subscriptions.stats_handler import handle_my_stats
 application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
+from subscriptions.settings_handler import handle_settings
+application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
