@@ -1,17 +1,42 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-def main_menu_keyboard():
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("📈 نسخ صفقات الحيتان", callback_data="copy_trade"),
-            InlineKeyboardButton("💳 اشتراك", callback_data="subscription_info")
-        ],
-        [
-            InlineKeyboardButton("📊 إحصائياتي", callback_data="my_stats"),
-            InlineKeyboardButton("⚙️ الإعدادات", callback_data="settings")
-        ],
-        [InlineKeyboardButton("ℹ️ المساعدة", callback_data="help")]
-    ])
+def main_menu_keyboard(lang="ar"):
+    if lang == "en":
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("📈 Copy Latest Trade", callback_data="copy_trade"),
+                InlineKeyboardButton("💳 Subscription", callback_data="subscription_info")
+            ],
+            [
+                InlineKeyboardButton("📊 My Stats", callback_data="my_stats"),
+                InlineKeyboardButton("⚙️ Settings", callback_data="settings")
+            ],
+            [InlineKeyboardButton("ℹ️ Help", callback_data="help")]
+        ])
+    elif lang == "es":
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("📈 Copiar la última operación", callback_data="copy_trade"),
+                InlineKeyboardButton("💳 Suscripción", callback_data="subscription_info")
+            ],
+            [
+                InlineKeyboardButton("📊 Mis estadísticas", callback_data="my_stats"),
+                InlineKeyboardButton("⚙️ Configuración", callback_data="settings")
+            ],
+            [InlineKeyboardButton("ℹ️ Ayuda", callback_data="help")]
+        ])
+    else:
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("📈 نسخ صفقات الحيتان", callback_data="copy_trade"),
+                InlineKeyboardButton("💳 اشتراك", callback_data="subscription_info")
+            ],
+            [
+                InlineKeyboardButton("📊 إحصائياتي", callback_data="my_stats"),
+                InlineKeyboardButton("⚙️ الإعدادات", callback_data="settings")
+            ],
+            [InlineKeyboardButton("ℹ️ المساعدة", callback_data="help")]
+        ])
 
 def plans_keyboard(lang="ar"):
     if lang == "en":
@@ -32,7 +57,7 @@ def plans_keyboard(lang="ar"):
             [InlineKeyboardButton("📋 ¿Cómo funciona el bot?", callback_data="how_it_works")],
             [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
         ])
-    else:  # Arabic
+    else:
         return InlineKeyboardMarkup([
             [
                 InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro"),
@@ -61,7 +86,7 @@ def crypto_payment_keyboard(plan: str, lang="ar"):
             [InlineKeyboardButton("↩️ Atrás", callback_data="back_to_plans")],
             [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
         ])
-    else:  # Arabic
+    else:
         return InlineKeyboardMarkup([
             [
                 InlineKeyboardButton("💠 دفع بـ SOL", callback_data=f"pay_sol_{plan}"),
