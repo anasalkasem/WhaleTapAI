@@ -86,3 +86,19 @@ def crypto_payment_keyboard(plan: str, lang="ar"):
             [InlineKeyboardButton("↩️ رجوع إلى الخطط", callback_data="back_to_plans")],
             [InlineKeyboardButton("🏠 الرئيسية", callback_data="main_menu")]
         ])
+def settings_keyboard(lang="ar"):
+    if lang == "en":
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 Change Language", callback_data="change_language")],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
+        ])
+    elif lang == "es":
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 Cambiar idioma", callback_data="change_language")],
+            [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
+        ])
+    else:
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 تغيير اللغة", callback_data="change_language")],
+            [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
+        ])
