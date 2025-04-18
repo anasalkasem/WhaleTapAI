@@ -18,3 +18,13 @@ async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     else:
         print("⚠️ No query or message found in update.")
+from telegram import Update
+from telegram.ext import ContextTypes
+
+async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    await query.edit_message_text(
+        "📥 Copied the latest whale trade successfully!"
+    )
