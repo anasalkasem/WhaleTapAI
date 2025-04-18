@@ -37,3 +37,19 @@ async def handle_free_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     # (اختياري) أضف المستخدم إلى قاعدة البيانات كـ "Free"
+# عرض عنوان محفظة الدفع بـ SOL
+async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    lang = context.user_data.get("lang", "ar")
+    wallet_address = "EnterYourSolanaWalletHere"  # ← ضع عنوان محفظتك هنا
+
+    if lang == "en":
+        text = f"💠 <b>To complete your payment:</b>\nSend exactly <code>1 SOL</code> to the address below:\n\n<code>{wallet_address}</code>"
+    elif lang == "es":
+        text = f"💠 <b>Para completar tu pago:</b>\nEnvía exactamente <code>1 SOL</code> a la siguiente dirección:\n\n<code>{wallet_address}</code>"
+    else:
+        text = f"💠 <b>لإتمام عملية الدفع:</b>\nأرسل <code>1 SOL</code> إلى العنوان التالي:\n\n<code>{wallet_address}</code>"
+
+    await query.edit_message_text(text=text, parse_mode="HTML")
