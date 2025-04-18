@@ -1,13 +1,13 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-# عرض عنوان محفظة الدفع بـ SOL
+# عرض عنوان محفظة الدفع بـ SOL (مترجمة)
 async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     lang = context.user_data.get("lang", "ar")
-    wallet_address = "YOUR_SOLANA_WALLET_ADDRESS"  # ← استبدلها بعنوان محفظتك الحقيقي
+    wallet_address = "YOUR_SOLANA_WALLET_ADDRESS"  # ← استبدله بعنوان محفظتك الحقيقي
 
     if lang == "en":
         text = (
@@ -21,7 +21,7 @@ async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE
             "💠 <b>Para completar tu pago:</b>\n"
             "Envía exactamente <code>1 SOL</code> a la siguiente dirección:\n\n"
             f"<code>{wallet_address}</code>\n\n"
-            "📌 Después del envío, por favor envía el hash de la transacción o captura de pantalla para confirmar."
+            "📌 Después del envío, por favor envía el hash de la transacción o una captura de pantalla para confirmar."
         )
     else:
         text = (
@@ -33,7 +33,8 @@ async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     await query.edit_message_text(text=text, parse_mode="HTML")
 
-# تفعيل النسخة المجانية
+
+# تفعيل النسخة المجانية (مترجمة)
 async def handle_free_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     lang = context.user_data.get("lang", "ar")
