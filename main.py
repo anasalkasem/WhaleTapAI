@@ -19,7 +19,7 @@ from subscriptions.settings_handler import (
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
-from subscriptions.trade_handlers import handle_copy_trade
+from subscriptions.copy_trade_handler import handle_copy_trade
 
 TOKEN = os.getenv("BOT_TOKEN")
 
