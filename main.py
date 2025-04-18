@@ -1,69 +1,53 @@
-import logging
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+import logging
+from telegram import Update
 from telegram.ext import (
     Application,
     CommandHandler,
     CallbackQueryHandler,
     ContextTypes
 )
+from subscriptions.main_menu_handler import handle_main_menu  # التصحيح هنا
+from subscriptions.keyboards import main_menu_keyboard
 
-from whale_ui.main_menu_handler import handle_main_menu
-from subscriptions.trade_handlers import handle_copy_trade
-
-# إعداد اللوج
-logging.basicConfig(level=logging.INFO)
+# إعداد اللوجر
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
+# متغيرات البيئة
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
-WEBHOOK_PATH = f"/{BOT_TOKEN}"
 
-if not BOT_TOKEN or not WEBHOOK_DOMAIN:
-    raise ValueError("يجب تعيين TELEGRAM_BOT_TOKEN و WEBHOOK_DOMAIN في متغيرات البيئة")
+if not BOT_TOKEN:
+    raise ValueError("لم يتم تعيين TELEGRAM_BOT_TOKEN في متغيرات البيئة")
+if not WEBHOOK_DOMAIN:
+    raise ValueError("لم يتم تعيين WEBHOOK_DOMAIN في متغيرات البيئة")
 
-WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
-
-# /start command
+# دالة بدء المحادثة
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [
-            InlineKeyboardButton("📥 Copy Latest Trade", callback_data="copy_trade"),
-            InlineKeyboardButton("🤖 Auto-Trading", callback_data="auto_trading")
-        ],
-        [
-            InlineKeyboardButton("🛑 Stop Copying", callback_data="stop_copying"),
-            InlineKeyboardButton("📊 My Portfolio", callback_data="portfolio")
-        ],
-        [
-            InlineKeyboardButton("⚙️ Settings", callback_data="settings"),
-            InlineKeyboardButton("🧠 Smart Whale Insights", callback_data="insights")
-        ],
-        [
-            InlineKeyboardButton("💳 Upgrade to PRO", callback_data="subscribe_pro"),
-            InlineKeyboardButton("🆓 Free Plan", callback_data="subscribe_free")
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Welcome to WhaleTap AI.\nChoose an option below:", reply_markup=reply_markup)
-
-def main():
-    application = Application.builder().token(BOT_TOKEN).build()
-
-    # Webhook settings
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8443)),
-        webhook_url=WEBHOOK_URL,
-        path=WEBHOOK_PATH
+    await update.message.reply_text(
+        "🚀 Welcome to WhaleTap!\nPlease use the menu below to start:",
+        reply_markup=main_menu_keyboard("en")  # اللغة الافتراضية إنجليزي
     )
 
-    # Handlers
+async def main():
+    application = Application.builder().token(BOT_TOKEN).build()
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(handle_main_menu))
-    application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
-    logger.info("Starting bot with Webhook...")
+    # إعداد Webhook
+    webhook_url = f"{WEBHOOK_DOMAIN}/webhook"
+    logger.info(f"Using Webhook URL: {webhook_url}")
+    await application.initialize()
+    await application.start()
+    await application.bot.set_webhook(webhook_url)
+    await application.updater.start_polling()
+    await application.updater.idle()
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())
