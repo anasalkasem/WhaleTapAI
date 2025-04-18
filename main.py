@@ -1,3 +1,4 @@
+from subscriptions.main_menu import main_menu_keyboard
 import logging
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
