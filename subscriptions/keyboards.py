@@ -32,3 +32,33 @@ def crypto_payment_keyboard(plan: str):
         [InlineKeyboardButton("↩️ رجوع", callback_data="back_to_plans")],
         [InlineKeyboardButton("🏠 الرئيسية", callback_data="main_menu")]
     ])
+    from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+def plans_keyboard(lang="ar"):
+    if lang == "en":
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("⭐ PRO Plan - $20", callback_data="subscribe_pro"),
+                InlineKeyboardButton("🆓 Free Trial", callback_data="subscribe_free")
+            ],
+            [InlineKeyboardButton("📋 How does the bot work?", callback_data="how_it_works")],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
+        ])
+    elif lang == "es":
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("⭐ Plan PRO - $20", callback_data="subscribe_pro"),
+                InlineKeyboardButton("🆓 Prueba gratuita", callback_data="subscribe_free")
+            ],
+            [InlineKeyboardButton("📋 ¿Cómo funciona el bot?", callback_data="how_it_works")],
+            [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
+        ])
+    else:  # Arabic
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro"),
+                InlineKeyboardButton("🆓 نسخة تجريبية", callback_data="subscribe_free")
+            ],
+            [InlineKeyboardButton("📋 كيف يعمل البوت؟", callback_data="how_it_works")],
+            [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
+        ])
