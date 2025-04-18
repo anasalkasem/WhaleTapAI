@@ -17,7 +17,8 @@ from subscriptions.settings_handler import (
     handle_language_selection
 )
 from subscriptions.insights_handler import handle_smart_insights
-from subscriptions.how_handler import handle_how_it_works  # زر "📋 كيف يعمل البوت؟"
+from subscriptions.how_handler import handle_how_it_works
+from subscriptions.trade_handlers import handle_copy_trade  # ← نسخ صفقة الحوت
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -50,10 +51,11 @@ def main():
     # كيف يعمل البوت؟
     application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
 
+    # نسخ صفقة الحوت
+    application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
+
     # تشغيل البوت
     application.run_polling()
 
 if __name__ == "__main__":
     main()
-from subscriptions.trade_handlers import handle_copy_trade
-application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
