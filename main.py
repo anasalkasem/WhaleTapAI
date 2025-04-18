@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # إعداد المتغيرات
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثل: https://your-domain.railway.app
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثال: https://your-project.up.railway.app
 
 if not TOKEN:
     raise ValueError("لم يتم تعيين TELEGRAM_BOT_TOKEN في متغيرات البيئة")
@@ -29,7 +29,7 @@ WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await handle_main_menu(update, context)
 
-# دالة التشغيل الرئيسية
+# الدالة الرئيسية لتشغيل البوت
 async def main():
     application = Application.builder().token(TOKEN).build()
 
@@ -39,12 +39,14 @@ async def main():
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
     logger.info(f"Using Webhook URL: {WEBHOOK_URL}")
-    await application.run_webhook(
-    listen="0.0.0.0",
-    port=int(os.getenv("PORT", 8443)),
-    url=WEBHOOK_URL,
-)
 
+    # إعداد Webhook بدون run_webhook()
+    await application.initialize()
+    await application.start()
+    await application.bot.set_webhook(WEBHOOK_URL)
+    await application.updater.start_polling()
+
+# بدء التشغيل
 if __name__ == "__main__":
     nest_asyncio.apply()
     asyncio.get_event_loop().run_until_complete(main())
