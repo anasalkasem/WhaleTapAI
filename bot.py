@@ -55,3 +55,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+from subscriptions.trade_handlers import handle_copy_trade
+application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
