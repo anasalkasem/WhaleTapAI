@@ -1,56 +1,51 @@
 import os
 import logging
+import asyncio
+import nest_asyncio
 from telegram import Update
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    CallbackQueryHandler,
-    ContextTypes
-)
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+
 from subscriptions.main_menu_handler import handle_main_menu
-from subscriptions.keyboards import main_menu_keyboard
+from subscriptions.copy_trade_handler import handle_copy_trade
 
 # إعداد اللوجر
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# متغيرات البيئة
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
+# إعداد المتغيرات
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثل: https://your-domain.railway.app
 
-if not BOT_TOKEN:
+if not TOKEN:
     raise ValueError("لم يتم تعيين TELEGRAM_BOT_TOKEN في متغيرات البيئة")
+
 if not WEBHOOK_DOMAIN:
     raise ValueError("لم يتم تعيين WEBHOOK_DOMAIN في متغيرات البيئة")
 
-# أمر /start
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🚀 Welcome to WhaleTap!\nPlease use the menu below to start:",
-        reply_markup=main_menu_keyboard("en")
-    )
+WEBHOOK_PATH = "/webhook"
+WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
-# Main
+# دالة بدء البوت
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await handle_main_menu(update, context)
+
+# دالة التشغيل الرئيسية
 async def main():
-    application = Application.builder().token(BOT_TOKEN).build()
+    application = Application.builder().token(TOKEN).build()
 
     # Handlers
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(handle_main_menu))
+    application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
+    application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
-    # Webhook
-    webhook_url = f"{WEBHOOK_DOMAIN}/webhook"
-    logger.info(f"Using Webhook URL: {webhook_url}")
+    # تشغيل البوت باستخدام Webhook
+    logger.info(f"Using Webhook URL: {WEBHOOK_URL}")
+    await application.initialize()
+    await application.start()
+    await application.bot.set_webhook(url=WEBHOOK_URL)
+    await application.updater.start_polling()  # بديل آمن لتفادي خطأ event loop
 
-    await application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8000)),
-        webhook_url=webhook_url,
-    )
-
+# تشغيل فعلي
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    nest_asyncio.apply()
+    asyncio.get_event_loop().run_until_complete(main())
