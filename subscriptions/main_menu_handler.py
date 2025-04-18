@@ -1,30 +1,36 @@
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
-from .main_menu import main_menu_keyboard
+
+
+def main_menu_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton("📥 Copy Latest Trade", callback_data="copy_trade"),
+            InlineKeyboardButton("🤖 Auto-Trading", callback_data="auto_trading")
+        ],
+        [
+            InlineKeyboardButton("🛑 Stop Copying", callback_data="stop_copying"),
+            InlineKeyboardButton("📊 My Portfolio", callback_data="my_portfolio")
+        ],
+        [
+            InlineKeyboardButton("⚙️ Settings", callback_data="settings"),
+            InlineKeyboardButton("🧠 Smart Whale Insights", callback_data="smart_insights")
+        ],
+        [
+            InlineKeyboardButton("💳 Upgrade to PRO", callback_data="upgrade_pro"),
+            InlineKeyboardButton("🆓 Free Plan", callback_data="free_plan")
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
 
 async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
+    keyboard = main_menu_keyboard()
+    text = "🚀 Welcome to WhaleTap!\nChoose an option below to get started."
 
-    if query:
-        await query.answer()
-        await query.edit_message_text(
-            text="🚀 Welcome to WhaleTap!\n\nChoose an option below to get started:",
-            reply_markup=main_menu_keyboard()
-        )
-    elif update.message:
-        await update.message.reply_text(
-            text="🚀 Welcome to WhaleTap!\n\nChoose an option below to get started:",
-            reply_markup=main_menu_keyboard()
-        )
-    else:
-        print("⚠️ No query or message found in update.")
-from telegram import Update
-from telegram.ext import ContextTypes
+    if update.message:
+        await update.message.reply_text(text, reply_markup=keyboard)
 
-async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    await query.edit_message_text(
-        "📥 Copied the latest whale trade successfully!"
-    )
+    elif update.callback_query:
+        await update.callback_query.answer()
+        await update.callback_query.edit_message_text(text=text, reply_markup=keyboard)
