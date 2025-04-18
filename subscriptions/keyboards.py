@@ -42,12 +42,31 @@ def plans_keyboard(lang="ar"):
             [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
         ])
 
-def crypto_payment_keyboard(plan: str):
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("💠 دفع بـ SOL", callback_data=f"pay_sol_{plan}"),
-            InlineKeyboardButton("💎 دفع بـ USDT", callback_data=f"pay_usdt_{plan}")
-        ],
-        [InlineKeyboardButton("↩️ رجوع", callback_data="back_to_plans")],
-        [InlineKeyboardButton("🏠 الرئيسية", callback_data="main_menu")]
-    ])
+def crypto_payment_keyboard(plan: str, lang="ar"):
+    if lang == "en":
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("💠 Pay with SOL", callback_data=f"pay_sol_{plan}"),
+                InlineKeyboardButton("💎 Pay with USDT", callback_data=f"pay_usdt_{plan}")
+            ],
+            [InlineKeyboardButton("↩️ Back", callback_data="back_to_plans")],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
+        ])
+    elif lang == "es":
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("💠 Pagar con SOL", callback_data=f"pay_sol_{plan}"),
+                InlineKeyboardButton("💎 Pagar con USDT", callback_data=f"pay_usdt_{plan}")
+            ],
+            [InlineKeyboardButton("↩️ Atrás", callback_data="back_to_plans")],
+            [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
+        ])
+    else:  # Arabic
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("💠 دفع بـ SOL", callback_data=f"pay_sol_{plan}"),
+                InlineKeyboardButton("💎 دفع بـ USDT", callback_data=f"pay_usdt_{plan}")
+            ],
+            [InlineKeyboardButton("↩️ رجوع", callback_data="back_to_plans")],
+            [InlineKeyboardButton("🏠 الرئيسية", callback_data="main_menu")]
+        ])
