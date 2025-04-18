@@ -4,9 +4,17 @@ from .main_menu import main_menu_keyboard
 
 async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
 
-    await query.edit_message_text(
-        "🚀 Welcome to WhaleTap!\n\nChoose an option below:",
-        reply_markup=main_menu_keyboard()
-    )
+    if query:
+        await query.answer()
+        await query.edit_message_text(
+            text="🚀 Welcome to WhaleTap!\n\nChoose an option below to get started:",
+            reply_markup=main_menu_keyboard()
+        )
+    elif update.message:
+        await update.message.reply_text(
+            text="🚀 Welcome to WhaleTap!\n\nChoose an option below to get started:",
+            reply_markup=main_menu_keyboard()
+        )
+    else:
+        print("⚠️ No query or message found in update.")
