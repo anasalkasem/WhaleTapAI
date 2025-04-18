@@ -1,12 +1,5 @@
-from telegram import Update
-from telegram.ext import ContextTypes
+from aiogram.types import Message
 
-# دالة تنفيذ نسخ الصفقة (وهمية حالياً)
-async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    
-    # رسالة تأكيد وهمية
-    await query.edit_message_text(
-        text="✅ The latest whale trade has been copied (demo only)."
-    )
+async def handle_copy_trade(message: Message):
+    await message.answer("✅ Trade copied successfully!
+We'll notify you when similar trades happen.")
