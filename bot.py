@@ -41,3 +41,6 @@ from subscriptions.settings_handler import (
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
 application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
 application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
+from subscriptions.payment_handlers import handle_pay_with_sol
+
+application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
