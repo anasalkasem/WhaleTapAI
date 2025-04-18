@@ -17,7 +17,7 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
         trade_type="buy"
     )
 
-    # حفظها في قاعدة البيانات
+    # حفظ الصفقة في قاعدة البيانات
     db = SessionLocal()
     db.add(fake_trade)
     db.commit()
