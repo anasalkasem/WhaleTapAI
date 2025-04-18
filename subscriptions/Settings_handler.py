@@ -16,13 +16,10 @@ async def handle_settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = settings_keyboard(lang)
 
     await update.callback_query.answer()
-    await update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=keyboard,
-        parse_mode="HTML"
-    )
+    await update.callback_query.edit_message_text(text=text, reply_markup=keyboard, parse_mode="HTML")
 
-# دالة اختيار اللغة
+
+# دالة تغيير اللغة
 async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
@@ -30,7 +27,8 @@ async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_T
         reply_markup=language_selection_keyboard()
     )
 
-# دالة حفظ اللغة المختارة
+
+# دالة حفظ اللغة المختارة مؤقتًا
 async def handle_language_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
