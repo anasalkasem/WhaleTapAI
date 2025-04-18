@@ -18,7 +18,7 @@ from subscriptions.settings_handler import (
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_handler import handle_how_it_works
-from subscriptions.trade_handlers import handle_copy_trade  # ← نسخ صفقة الحوت
+from subscriptions.trade_handlers import handle_copy_trade  # زر نسخ الصفقة
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -51,7 +51,7 @@ def main():
     # كيف يعمل البوت؟
     application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
 
-    # نسخ صفقة الحوت
+    # زر نسخ صفقة الحوت
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
     # تشغيل البوت
