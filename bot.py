@@ -24,3 +24,5 @@ if __name__ == "__main__":
     main()
     from subscriptions.payment_handlers import handle_pay_usdt
 application.add_handler(CallbackQueryHandler(handle_pay_usdt, pattern="^pay_usdt_"))
+from subscriptions.payment_handlers import handle_free_plan
+application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
