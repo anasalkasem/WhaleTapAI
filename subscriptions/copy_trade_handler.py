@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from subscriptions.keyboards import main_menu_keyboard
-from subscriptions.db_utils import SessionLocal  # تم التعديل هنا
+from models.database import Session  # تعديل الاستيراد الصحيح
 
 # دالة تنفيذ نسخ صفقة الحوت
 async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -9,8 +9,10 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = user.id
     lang = context.user_data.get("lang", "ar")
 
-    # إنشاء جلسة قاعدة البيانات (بشكل وهمي حالياً)
-    session = SessionLocal()
+    # إنشاء جلسة قاعدة البيانات
+    session = Session()
+
+    # (هنا ممكن لاحقاً تضيف كود حفظ صفقة في قاعدة البيانات)
 
     # رسالة التأكيد
     if lang == "en":
