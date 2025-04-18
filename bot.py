@@ -17,7 +17,7 @@ from subscriptions.settings_handler import (
     handle_language_selection
 )
 from subscriptions.insights_handler import handle_smart_insights
-from subscriptions.how_handler import handle_how_it_works  # ← الجديد
+from subscriptions.how_handler import handle_how_it_works  # زر "📋 كيف يعمل البوت؟"
 
 TOKEN = os.getenv("BOT_TOKEN")
 
