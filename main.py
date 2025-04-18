@@ -30,7 +30,7 @@ if not WEBHOOK_DOMAIN:
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🚀 Welcome to WhaleTap!\nPlease use the menu below to start:",
-        reply_markup=main_menu_keyboard("en")  # الواجهة الافتراضية إنجليزي
+        reply_markup=main_menu_keyboard("en")
     )
 
 # Main
@@ -44,13 +44,12 @@ async def main():
     # Webhook
     webhook_url = f"{WEBHOOK_DOMAIN}/webhook"
     logger.info(f"Using Webhook URL: {webhook_url}")
-    
-    await application.initialize()
-    await application.start()
-    await application.bot.set_webhook(webhook_url)
-    
-    # الآن البوت يعمل... ننتظر فقط إغلاقه
-    await application.stop()  # لا نستخدم updater.idle()
+
+    await application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000)),
+        webhook_url=webhook_url,
+    )
 
 if __name__ == "__main__":
     import asyncio
