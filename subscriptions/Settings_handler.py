@@ -16,10 +16,14 @@ async def handle_settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = settings_keyboard(lang)
 
     await update.callback_query.answer()
-    await update.callback_query.edit_message_text(text=text, reply_markup=keyboard, parse_mode="HTML")
+    await update.callback_query.edit_message_text(
+        text=text,
+        reply_markup=keyboard,
+        parse_mode="HTML"
+    )
 
 
-# دالة تغيير اللغة
+# دالة عرض لوحة اختيار اللغة
 async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
@@ -28,14 +32,16 @@ async def handle_change_language(update: Update, context: ContextTypes.DEFAULT_T
     )
 
 
-# دالة حفظ اللغة المختارة مؤقتًا
+# دالة حفظ اللغة المختارة مؤقتًا في context.user_data
 async def handle_language_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
+    # استخراج رمز اللغة من callback_data
     lang_code = query.data.split("_")[1]
     context.user_data["lang"] = lang_code
 
+    # اسم اللغة لعرض رسالة التأكيد
     lang_name = {
         "en": "English",
         "ar": "العربية",
