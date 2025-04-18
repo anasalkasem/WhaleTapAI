@@ -26,7 +26,7 @@ def main():
     # أوامر البوت
     application.add_handler(CommandHandler("start", handle_main_menu))
 
-    # قائمة رئيسية
+    # القائمة الرئيسية
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
 
     # الاشتراكات
@@ -51,13 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-from subscriptions.settings_handler import handle_settings
-
-application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
-from subscriptions.settings_handler import (
-    handle_change_language,
-    handle_language_selection
-)
-
-application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
-application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
