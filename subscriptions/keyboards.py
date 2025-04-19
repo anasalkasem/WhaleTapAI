@@ -143,3 +143,22 @@ def plans_keyboard(lang="ar"):
             [InlineKeyboardButton("📋 كيف يعمل البوت؟", callback_data="how_it_works")],
             [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
         ])
+def crypto_payment_keyboard(plan: str, lang="ar"):
+    if lang == "en":
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("💠 Pay with SOL", callback_data=f"pay_sol_{plan}")],
+            [InlineKeyboardButton("↩️ Back to Plans", callback_data="back_to_plans")],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
+        ])
+    elif lang == "es":
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("💠 Pagar con SOL", callback_data=f"pay_sol_{plan}")],
+            [InlineKeyboardButton("↩️ Volver a planes", callback_data="back_to_plans")],
+            [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
+        ])
+    else:
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("💠 دفع بـ SOL", callback_data=f"pay_sol_{plan}")],
+            [InlineKeyboardButton("↩️ رجوع إلى الخطط", callback_data="back_to_plans")],
+            [InlineKeyboardButton("🏠 الرئيسية", callback_data="main_menu")]
+        ])
