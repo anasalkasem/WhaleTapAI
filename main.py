@@ -1,7 +1,6 @@
 import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
-# استيراد المعالجات
 from subscriptions.main_menu_handler import (
     handle_main_menu,
     handle_subscription_info,
@@ -21,9 +20,7 @@ from subscriptions.settings_handler import (
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
 from subscriptions.copy_trade_handler import handle_copy_trade
-
-# دالة الأدمن لحذف الصفقات
-from utils.delete_table_whale_trades_v2 import handle_delete_trades
+from utils.delete_table_whale_trades_v2 import handle_delete_trades  # تم إضافته
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -60,10 +57,9 @@ def main():
     # نسخ الصفقة
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
-    # حذف صفقات الحيتان (للأدمن فقط)
+    # حذف سجل الصفقات (للأدمن فقط)
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # تشغيل البوت
     application.run_polling()
 
 if __name__ == "__main__":
