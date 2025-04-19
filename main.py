@@ -1,4 +1,5 @@
 import os
+import models.init_db  # هذا السطر في أعلى main.py
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 from subscriptions.main_menu_handler import (
