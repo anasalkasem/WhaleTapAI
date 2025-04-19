@@ -10,3 +10,4 @@ with engine.connect() as connection:
 Base.metadata.create_all(bind=engine)
 
 print("✅ تمت إعادة إنشاء جدول whale_trades_v2 بنجاح.")
+from models.auto_trading_settings import AutoTradingSettings
