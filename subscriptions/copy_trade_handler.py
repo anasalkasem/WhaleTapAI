@@ -1,31 +1,36 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from subscriptions.keyboards import main_menu_keyboard
 from models.database import Session, WhaleTrade
+from subscriptions.keyboards import main_menu_keyboard
 import datetime
+import logging
 
-# دالة تنفيذ نسخ صفقة الحوت
+# إعداد اللوج
+logger = logging.getLogger(__name__)
+
+# تنفيذ نسخ الصفقة
 async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    user_id = user.id
+    user_id = update.effective_user.id
     lang = context.user_data.get("lang", "ar")
 
-    session = Session()
-
     try:
+        session = Session()
+
         # صفقة وهمية
         fake_trade = WhaleTrade(
             user_id=user_id,
-            whale_wallet="whale_fake_wallet_123",
-            token_address="token_fake_address_456",
-            amount=12345.67,
+            whale_wallet="fake_wallet_123",
+            token_address="fake_token_abc",
+            amount=1234.56,
             trade_type="buy",
             timestamp=datetime.datetime.utcnow()
         )
 
         session.add(fake_trade)
         session.commit()
+        session.close()
 
+        # نجاح
         if lang == "en":
             text = "✅ The whale trade has been copied successfully!"
         elif lang == "es":
@@ -34,21 +39,16 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text = "✅ تم نسخ صفقة الحوت بنجاح!"
 
     except Exception as e:
-        session.rollback()
-        print(f"[DB ERROR] Failed to copy trade: {e}")
-
+        logger.error(f"Error copying trade: {e}")  # يسجل الخطأ
         if lang == "en":
             text = "❌ An error occurred while copying the trade. Please try again later."
         elif lang == "es":
-            text = "❌ Ocurrió un error al copiar la operación. Inténtalo de nuevo más tarde."
+            text = "❌ Se produjo un error al copiar la operación. Inténtalo más tarde."
         else:
             text = "❌ حدث خطأ أثناء نسخ الصفقة. حاول لاحقاً."
-    
-    finally:
-        session.close()
 
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
         text=text,
-        reply_markup=main_menu_keyboard(lang)
+        reply_markup=main_menu_keyboard(lang, user_id),
     )
