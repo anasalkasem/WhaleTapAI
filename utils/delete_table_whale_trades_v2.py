@@ -1,26 +1,36 @@
-# utils/delete_table_whale_trades_v2.py
+from telegram import Update
+from telegram.ext import ContextTypes
+from models.database import Session, WhaleTrade
 
-from sqlalchemy import create_engine, MetaData, Table
-import os
+# معرف الأدمن
+ADMIN_ID = 6672291052
 
-# الاتصال بقاعدة البيانات عبر DATABASE_URL من متغيرات البيئة
-DATABASE_URL = os.getenv("DATABASE_URL")
+# دالة حذف سجل الصفقات
+async def handle_delete_trades(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    lang = context.user_data.get("lang", "ar")
 
-if not DATABASE_URL:
-    raise Exception("❌ تأكد من ضبط متغير البيئة DATABASE_URL")
+    # التحقق إذا المستخدم أدمن
+    if user_id != ADMIN_ID:
+        if lang == "en":
+            text = "⚠️ You are not authorized to perform this action."
+        elif lang == "es":
+            text = "⚠️ No estás autorizado para realizar esta acción."
+        else:
+            text = "⚠️ ليس لديك صلاحية تنفيذ هذا الإجراء."
+    else:
+        # حذف كل الصفقات من قاعدة البيانات
+        session = Session()
+        session.query(WhaleTrade).delete()
+        session.commit()
+        session.close()
 
-# إعداد الاتصال
-engine = create_engine(DATABASE_URL)
-metadata = MetaData()
+        if lang == "en":
+            text = "✅ All whale trades have been deleted successfully."
+        elif lang == "es":
+            text = "✅ Todas las operaciones han sido eliminadas correctamente."
+        else:
+            text = "✅ تم حذف جميع صفقات الحيتان بنجاح."
 
-# جلب كل الجداول من القاعدة
-metadata.reflect(bind=engine)
-
-# حذف الجدول إذا كان موجود
-table_name = "whale_trades_v2"
-if table_name in metadata.tables:
-    table = Table(table_name, metadata, autoload_with=engine)
-    table.drop(engine)
-    print(f"✅ تم حذف الجدول {table_name} بنجاح.")
-else:
-    print(f"⚠️ الجدول {table_name} غير موجود أصلاً.")
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text(text=text)
