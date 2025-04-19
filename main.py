@@ -1,4 +1,5 @@
 import os
+import models.fix_whale_trades_v2
 import models.init_db  # هذا السطر في أعلى main.py
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
