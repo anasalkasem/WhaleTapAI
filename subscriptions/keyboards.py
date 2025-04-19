@@ -111,3 +111,12 @@ def language_selection_keyboard():
         ],
         [InlineKeyboardButton("↩️ رجوع", callback_data="settings")]
     ])
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+def main_menu_keyboard(lang):
+    keyboard = [
+        [InlineKeyboardButton("📈 نسخ صفقات الحيتان", callback_data="copy_trade")],
+        [InlineKeyboardButton("⚙️ الإعدادات", callback_data="settings")],
+        [InlineKeyboardButton("🧼 حذف سجل الصفقات", callback_data="admin_delete_trades")]  # زر الأدمن
+    ]
+    return InlineKeyboardMarkup(keyboard)
