@@ -1,6 +1,7 @@
 import os
-import models.fix_whale_trades_v2
-import models.init_db  # هذا السطر في أعلى main.py
+# import models.fix_whale_trades_v2  # تم التعليق بعد تنفيذ المهمة لمرة واحدة فقط
+# import models.init_db  # تم التعليق بعد إنشاء الجداول لمرة واحدة فقط
+
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 from subscriptions.main_menu_handler import (
