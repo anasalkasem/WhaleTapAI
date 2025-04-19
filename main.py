@@ -19,12 +19,17 @@ from subscriptions.settings_handler import (
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
 from subscriptions.copy_trade_handler import handle_copy_trade
+from subscriptions.auto_trading_handlers import (
+    handle_auto_trading,
+    handle_stop_copying
+)
 from utils.delete_table_whale_trades_v2 import handle_delete_trades  # للأدمن فقط
 
 TOKEN = os.getenv("BOT_TOKEN")
 
 def main():
     application = Application.builder().token(TOKEN).build()
+
     application.add_handler(CommandHandler("start", handle_main_menu))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
@@ -40,14 +45,12 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
+
+    # أوامر التداول التلقائي
+    application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
+    application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
+
     application.run_polling()
 
 if __name__ == "__main__":
     main()
-from subscriptions.auto_trading_handlers import (
-    handle_auto_trading,
-    handle_stop_copying
-)
-
-application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
-application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
