@@ -1,6 +1,12 @@
 from models.database import Base, engine
+from sqlalchemy import text
 
-# إنشاء الجداول إذا لم تكن موجودة مسبقاً
+# حذف الجدول إذا كان موجود
+with engine.connect() as connection:
+    connection.execute(text("DROP TABLE IF EXISTS whale_trades_v2 CASCADE;"))
+    connection.commit()
+
+# إعادة إنشائه من جديد
 Base.metadata.create_all(bind=engine)
 
-print("✅ تمت مزامنة الجداول مع قاعدة البيانات.")
+print("✅ تمت إعادة إنشاء جدول whale_trades_v2 بنجاح.")
