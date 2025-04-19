@@ -5,7 +5,7 @@ from .keyboards import main_menu_keyboard, plans_keyboard, crypto_payment_keyboa
 # القائمة الرئيسية
 async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data.get("lang", "ar")  # اللغة الافتراضية: عربي
-    user_id = update.effective_user.id  # إضافة هذا السطر
+    user_id = update.effective_user.id  # جلب معرف المستخدم
 
     if lang == "en":
         text = "🚀 <b>Welcome to WhaleTap!</b>\nChoose an option below to get started."
