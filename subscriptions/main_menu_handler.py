@@ -14,8 +14,6 @@ async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         text = "🚀 <b>مرحباً بك في WhaleTap!</b>\nاختر خياراً للبدء."
 
-    print("User ID:", user_id)
-    print("Admin Check:", user_id == 6672291052)
     keyboard = main_menu_keyboard(lang, user_id)
 
     if update.message:
