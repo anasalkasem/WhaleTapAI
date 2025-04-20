@@ -68,3 +68,19 @@ async def handle_toggle_notifications(update: Update, context: ContextTypes.DEFA
 
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(text=text)
+from db_utils import set_user_language
+
+async def handle_language_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    selected_lang = query.data.replace("lang_", "")
+    user_id = query.from_user.id
+    set_user_language(user_id, selected_lang)
+
+    await query.edit_message_text(
+        text="✅ تم تغيير اللغة." if selected_lang == "ar" else
+             "✅ Language changed." if selected_lang == "en" else
+             "✅ Idioma cambiado.",
+        reply_markup=settings_keyboard(lang=selected_lang)
+    )
