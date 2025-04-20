@@ -1,10 +1,5 @@
 import os
 import nest_asyncio
-from dotenv import load_dotenv
-
-# ✅ تحميل متغيرات البيئة
-load_dotenv()
-
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from db_utils import init_db
 
@@ -28,7 +23,7 @@ from subscriptions.auto_trading_handlers import (
 )
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
-# متغيرات البيئة
+# متغيرات البيئة من Railway مباشرة
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
 WEBHOOK_PATH = "/webhook"
@@ -64,7 +59,7 @@ def main():
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
         webhook_url=WEBHOOK_URL,
-        bootstrap_retries=0  # ✅ مهم جداً لتفادي الأخطاء المتكررة في Railway
+        bootstrap_retries=0
     )
 
 if __name__ == "__main__":
