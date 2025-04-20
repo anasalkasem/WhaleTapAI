@@ -1,5 +1,7 @@
 import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
+from db_utils import init_db
+
 from subscriptions.main_menu_handler import (
     handle_main_menu,
     handle_subscription_info,
@@ -28,6 +30,8 @@ from utils.delete_table_whale_trades_v2 import handle_delete_trades  # للأد�
 TOKEN = os.getenv("BOT_TOKEN")
 
 def main():
+    init_db()  # ← إنشاء الجداول عند التشغيل
+
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", handle_main_menu))
