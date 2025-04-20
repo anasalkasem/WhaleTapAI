@@ -4,17 +4,16 @@ import nest_asyncio
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from db_utils import init_db
 
-# استيراد الهاندلرز الموجودين عندك
 from subscriptions.main_menu_handler import (
-    handle_main_menu, handle_subscription_info, handle_back_to_plans
+    handle_main_menu, handle_subscription_info, handle_back_to_plans,
 )
 from subscriptions.payment_handlers import (
-    handle_pay_with_sol, handle_free_plan
+    handle_pay_with_sol, handle_free_plan,
 )
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.settings_handler import (
     handle_settings, handle_change_language,
-    handle_language_selection, handle_toggle_notifications
+    handle_language_selection, handle_toggle_notifications,
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
@@ -30,12 +29,13 @@ WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
-async def run():
+def main():
+    nest_asyncio.apply()
     init_db()
 
     application = Application.builder().token(TOKEN).build()
 
-    # إضافة جميع الهاندلرز
+    # Handlers
     application.add_handler(CommandHandler("start", handle_main_menu))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
@@ -54,18 +54,12 @@ async def run():
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # تشغيل Webhook
-    await application.initialize()
-    await application.bot.delete_webhook()
-    await application.start()
-    await application.updater.start_webhook(
+    # ✅ Webhook
+    application.run_webhook(
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
-        url_path="webhook",
         webhook_url=WEBHOOK_URL
     )
-    await application.updater.idle()
 
 if __name__ == "__main__":
-    nest_asyncio.apply()
-    asyncio.get_event_loop().run_until_complete(run())
+    main()
