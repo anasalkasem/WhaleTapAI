@@ -16,6 +16,7 @@ def main_menu_keyboard(lang="ar", user_id=None):
                 InlineKeyboardButton("📊 My Stats", callback_data="my_stats"),
                 InlineKeyboardButton("⚙️ Settings", callback_data="settings")
             ],
+            [InlineKeyboardButton("🤖 Auto-Trading", callback_data="auto_trading")],
             [InlineKeyboardButton("ℹ️ Help", callback_data="help")]
         ]
     elif lang == "es":
@@ -28,6 +29,7 @@ def main_menu_keyboard(lang="ar", user_id=None):
                 InlineKeyboardButton("📊 Mis estadísticas", callback_data="my_stats"),
                 InlineKeyboardButton("⚙️ Configuración", callback_data="settings")
             ],
+            [InlineKeyboardButton("🤖 Trading automático", callback_data="auto_trading")],
             [InlineKeyboardButton("ℹ️ Ayuda", callback_data="help")]
         ]
     else:
@@ -40,6 +42,7 @@ def main_menu_keyboard(lang="ar", user_id=None):
                 InlineKeyboardButton("📊 إحصائياتي", callback_data="my_stats"),
                 InlineKeyboardButton("⚙️ الإعدادات", callback_data="settings")
             ],
+            [InlineKeyboardButton("🤖 النسخ التلقائي", callback_data="auto_trading")],
             [InlineKeyboardButton("ℹ️ المساعدة", callback_data="help")]
         ]
 
