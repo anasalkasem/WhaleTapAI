@@ -25,10 +25,13 @@ from subscriptions.auto_trading_handlers import (
     handle_auto_trading,
     handle_stop_copying
 )
-from utils.delete_table_whale_trades_v2 import handle_delete_trades  # للأدمن فقط
+from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
+# إعداد المتغيرات
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # أضف هذا المتغير في Railway
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # ← نقرأ اسم المتغير الصحيح
+WEBHOOK_PATH = "/webhook"
+WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
 def main():
     init_db()
@@ -56,7 +59,7 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
 
-    # ✅ تشغيل Webhook بدل polling
+    # ✅ Webhook
     application.run_webhook(
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
