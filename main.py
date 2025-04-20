@@ -28,12 +28,14 @@ from subscriptions.auto_trading_handlers import (
 from utils.delete_table_whale_trades_v2 import handle_delete_trades  # للأدمن فقط
 
 TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # أضف هذا المتغير في Railway
 
 def main():
-    init_db()  # ← إنشاء الجداول عند التشغيل
+    init_db()
 
     application = Application.builder().token(TOKEN).build()
 
+    # الأوامر
     application.add_handler(CommandHandler("start", handle_main_menu))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
@@ -54,7 +56,12 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
 
-    application.run_polling()
+    # ✅ تشغيل Webhook بدل polling
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000)),
+        webhook_url=WEBHOOK_URL
+    )
 
 if __name__ == "__main__":
     main()
