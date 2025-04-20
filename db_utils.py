@@ -35,3 +35,19 @@ def save_payment(user_id: int, plan: str, currency: str, amount: float):
     cursor.execute("UPDATE payments SET status = 'active' WHERE user_id = ?", (user_id,))
     conn.commit()
     conn.close()
+from sqlalchemy import insert, select, update
+from models import user_settings
+from db import session
+
+def set_user_language(user_id: int, language: str):
+    stmt = insert(user_settings).values(user_id=user_id, language=language).on_conflict_do_update(
+        index_elements=[user_settings.c.user_id],
+        set_={"language": language}
+    )
+    session.execute(stmt)
+    session.commit()
+
+def get_user_language(user_id: int) -> str:
+    stmt = select(user_settings.c.language).where(user_settings.c.user_id == user_id)
+    result = session.execute(stmt).scalar()
+    return result or "ar"
