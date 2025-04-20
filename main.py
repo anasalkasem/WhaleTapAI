@@ -54,10 +54,11 @@ def main():
 
     # تشغيل Webhook
     application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8000)),
-        webhook_url=WEBHOOK_URL
-    )
+    listen="0.0.0.0",
+    port=int(os.environ.get("PORT", 8000)),
+    webhook_url=WEBHOOK_URL,
+    bootstrap_retries=0  # هذا يمنع محاولة تعيين Webhook تلقائيًا
+)
 
 if __name__ == "__main__":
     nest_asyncio.apply()
