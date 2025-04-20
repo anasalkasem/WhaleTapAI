@@ -54,3 +54,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+from subscriptions.auto_trading_handlers import handle_auto_trading, handle_stop_copying
