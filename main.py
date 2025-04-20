@@ -1,9 +1,9 @@
 import os
-import asyncio
 import nest_asyncio
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from db_utils import init_db
 
+# Handlers
 from subscriptions.main_menu_handler import (
     handle_main_menu, handle_subscription_info, handle_back_to_plans,
 )
@@ -23,16 +23,14 @@ from subscriptions.auto_trading_handlers import (
 )
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
-# إعداد المتغيرات
+# متغيرات البيئة
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
 def main():
-    nest_asyncio.apply()
     init_db()
-
     application = Application.builder().token(TOKEN).build()
 
     # Handlers
@@ -54,7 +52,7 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # ✅ Webhook
+    # تشغيل Webhook
     application.run_webhook(
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
@@ -62,4 +60,5 @@ def main():
     )
 
 if __name__ == "__main__":
+    nest_asyncio.apply()
     main()
