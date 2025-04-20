@@ -23,9 +23,9 @@ from subscriptions.auto_trading_handlers import (
 )
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
-# متغيرات البيئة من Railway مباشرة
+# ✅ متغيرات البيئة من Railway مباشرة
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثل: https://web-production-xxxx.up.railway.app
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
