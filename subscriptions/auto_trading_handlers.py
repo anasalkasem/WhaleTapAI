@@ -14,3 +14,8 @@ async def handle_auto_trading(update: Update, context: CallbackContext):
              "قم بتعديل المعايير أدناه لإنشاء أو تخصيص نمط التداول التلقائي الخاص بك.",
         reply_markup=keyboard
     )
+async def handle_stop_copying(update: Update, context: CallbackContext):
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text(
+        text="🛑 تم إيقاف نسخ صفقات الحيتان مؤقتًا.\nيمكنك إعادة التفعيل من القائمة الرئيسية."
+    )
