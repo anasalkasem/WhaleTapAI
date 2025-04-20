@@ -1,5 +1,8 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackContext
+from db_utils import get_user_language
 
+# === لوحة إعدادات التداول التلقائي ===
 def auto_trading_keyboard(lang="ar"):
     if lang == "en":
         return InlineKeyboardMarkup([
@@ -44,6 +47,7 @@ def auto_trading_keyboard(lang="ar"):
             [InlineKeyboardButton("- Sell Conditions -", callback_data="none")],
             [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
         ])
+    
     elif lang == "es":
         return InlineKeyboardMarkup([
             [InlineKeyboardButton("Monto por compra: -", callback_data="edit_buy_amount")],
@@ -87,6 +91,7 @@ def auto_trading_keyboard(lang="ar"):
             [InlineKeyboardButton("- Condiciones de venta -", callback_data="none")],
             [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
         ])
+    
     else:
         return InlineKeyboardMarkup([
             [InlineKeyboardButton("المبلغ لكل عملية شراء: -", callback_data="edit_buy_amount")],
@@ -130,20 +135,21 @@ def auto_trading_keyboard(lang="ar"):
             [InlineKeyboardButton("- شروط البيع -", callback_data="none")],
             [InlineKeyboardButton("🏠 العودة إلى القائمة الرئيسية", callback_data="main_menu")]
         ])
-from db_utils import get_user_language
 
+# === دالة عرض واجهة النسخ التلقائي ===
 async def handle_auto_trading(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     user_lang = get_user_language(user_id)
-
     keyboard = auto_trading_keyboard(lang=user_lang)
+
+    text = {
+        "ar": "⚙️ إعدادات التداول التلقائي:\nقم بتعديل المعايير أدناه لإنشاء أو تخصيص نمط التداول التلقائي الخاص بك.",
+        "en": "⚙️ Auto-Trading Settings:\nAdjust the parameters below to create or customize your strategy.",
+        "es": "⚙️ Configuración de trading automático:\nAjusta los parámetros abajo para tu estrategia."
+    }.get(user_lang, "⚙️ Auto-Trading Settings")
 
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(
-        text="⚙️ إعدادات التداول التلقائي:\nقم بتعديل المعايير أدناه لإنشاء أو تخصيص نمط التداول التلقائي الخاص بك."
-        if user_lang == "ar" else
-        "⚙️ Auto-Trading Settings:\nAdjust the parameters below to create or customize your strategy."
-        if user_lang == "en" else
-        "⚙️ Configuración de trading automático:\nAjusta los parámetros abajo para tu estrategia.",
+        text=text,
         reply_markup=keyboard
     )
