@@ -2,43 +2,46 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 def auto_trading_keyboard():
     keyboard = [
-        [InlineKeyboardButton("اختر قالب 🟠", callback_data='choose_template')],
-        [InlineKeyboardButton("المبلغ لكل عملية شراء: -", callback_data='buy_amount_each')],
-        [InlineKeyboardButton("إجمالي مبلغ الشراء: -", callback_data='total_buy_amount')],
+        [InlineKeyboardButton("المبلغ لكل عملية شراء: -", callback_data="amount_per_trade")],
+        [InlineKeyboardButton("إجمالي مبلغ الشراء: -", callback_data="total_purchase_amount")],
         [
-            InlineKeyboardButton("رسوم الغاز للبيع: 0...", callback_data='sell_gas_fee'),
-            InlineKeyboardButton("رسوم الغاز للشراء: 0...", callback_data='buy_gas_fee')
+            InlineKeyboardButton("رسوم الغاز للشراء: 0...", callback_data="gas_fee_buy"),
+            InlineKeyboardButton("رسوم الغاز للبيع: 0...", callback_data="gas_fee_sell")
         ],
         [
-            InlineKeyboardButton("نصيحة بيع MEV: 0...", callback_data='sell_mev'),
-            InlineKeyboardButton("نصيحة شراء MEV: ...", callback_data='buy_mev')
+            InlineKeyboardButton("نصيحة شراء MEV: ...", callback_data="mev_buy"),
+            InlineKeyboardButton("نصيحة بيع MEV: 0...", callback_data="mev_sell")
         ],
-        [InlineKeyboardButton("🟠 مضاد MEV", callback_data='mev_protection')],
+        [InlineKeyboardButton("🟠 مضاد MEV", callback_data="mev_protection")],
         [
-            InlineKeyboardButton("بيع الانزلاق: 20%", callback_data='sell_slippage'),
-            InlineKeyboardButton("شراء الانزلاق: 20%", callback_data='buy_slippage')
+            InlineKeyboardButton("شراء الانزلاق: %20", callback_data="slippage_buy"),
+            InlineKeyboardButton("بيع الانزلاق: %20", callback_data="slippage_sell")
         ],
-        [InlineKeyboardButton("- شروط الشراء -", callback_data='buy_conditions')],
+        [InlineKeyboardButton("-شروط الشراء-", callback_data="buy_conditions")],
         [
-            InlineKeyboardButton("الحد الأقصى لرأس المال: -", callback_data='max_cap'),
-            InlineKeyboardButton("الحد الأدنى لرأس المال: -", callback_data='min_cap')
+            InlineKeyboardButton("-m: :", callback_data="min_condition_m"),
+            InlineKeyboardButton("-m: :", callback_data="max_condition_m")
         ],
         [
-            InlineKeyboardButton("5m: ≥-% التغيير", callback_data='change_5m'),
-            InlineKeyboardButton("1m: ≥-% التغيير", callback_data='change_1m')
+            InlineKeyboardButton("الحد الأدنى لرأس المال", callback_data="min_cap"),
+            InlineKeyboardButton("الحد الأقصى لرأس المال", callback_data="max_cap")
         ],
-        [InlineKeyboardButton("5m: ≥-% التغيير/الحد الأدنى", callback_data='min_change_5m')],
         [
-            InlineKeyboardButton("5s المعاملات: ≥-", callback_data='txs_5s'),
-            InlineKeyboardButton("1m المعاملات: ≥-", callback_data='txs_1m')
+            InlineKeyboardButton("التغيير: ≥-% 1m", callback_data="change_1m"),
+            InlineKeyboardButton("التغيير: ≥-% 5m", callback_data="change_5m")
         ],
-        [InlineKeyboardButton("1m المعاملات التغيير: ≥-%", callback_data='txs_change_1m')],
-        [InlineKeyboardButton("كمية آخر 3 كتل: -", callback_data='last_blocks_volume')],
-        [InlineKeyboardButton("- شروط البيع -", callback_data='sell_conditions')],
+        [InlineKeyboardButton("التغيير/الحد الأدنى 5m: ≥-%", callback_data="change_min_5m")],
         [
-            InlineKeyboardButton("➕ إضافة", callback_data='add_autotrade'),
-            InlineKeyboardButton("إنشاء ✅", callback_data='create_autotrade')
+            InlineKeyboardButton("المعاملات 5s: ≥-", callback_data="tx_5s"),
+            InlineKeyboardButton("المعاملات 1m: ≥-", callback_data="tx_1m")
         ],
-        [InlineKeyboardButton("← العودة", callback_data='main_menu')]
+        [InlineKeyboardButton("المعاملات التغيير 1m: ≥-%", callback_data="tx_change_1m")],
+        [InlineKeyboardButton("كمية آخر 3 كتل: -", callback_data="last_blocks_volume")],
+        [InlineKeyboardButton("-شروط البيع-", callback_data="sell_conditions")],
+        [
+            InlineKeyboardButton("إضافة", callback_data="auto_add"),
+            InlineKeyboardButton("إنشاء", callback_data="auto_create")
+        ],
+        [InlineKeyboardButton("← العودة", callback_data="main_menu")]
     ]
     return InlineKeyboardMarkup(keyboard)
