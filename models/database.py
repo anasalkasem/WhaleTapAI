@@ -6,7 +6,10 @@ import datetime
 
 # جلب رابط الاتصال من متغير البيئة
 DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
+if not DATABASE_URL:
+    raise Exception("❌ DATABASE_URL is missing! Please check your Railway environment variables.")
 # إنشاء الاتصال بقاعدة البيانات
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
