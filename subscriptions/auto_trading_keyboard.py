@@ -40,5 +40,6 @@ def auto_trading_keyboard():
         [
             InlineKeyboardButton("كمية آخر 3 كتل: -", callback_data="edit_last_blocks_amount")
         ],
-        [InlineKeyboardButton("- شروط البيع -", callback_data="none")]
+        [InlineKeyboardButton("- شروط البيع -", callback_data="none")],
+        [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
     ])
