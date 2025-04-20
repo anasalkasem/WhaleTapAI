@@ -130,3 +130,20 @@ def auto_trading_keyboard(lang="ar"):
             [InlineKeyboardButton("- شروط البيع -", callback_data="none")],
             [InlineKeyboardButton("🏠 العودة إلى القائمة الرئيسية", callback_data="main_menu")]
         ])
+from db_utils import get_user_language
+
+async def handle_auto_trading(update: Update, context: CallbackContext):
+    user_id = update.effective_user.id
+    user_lang = get_user_language(user_id)
+
+    keyboard = auto_trading_keyboard(lang=user_lang)
+
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text(
+        text="⚙️ إعدادات التداول التلقائي:\nقم بتعديل المعايير أدناه لإنشاء أو تخصيص نمط التداول التلقائي الخاص بك."
+        if user_lang == "ar" else
+        "⚙️ Auto-Trading Settings:\nAdjust the parameters below to create or customize your strategy."
+        if user_lang == "en" else
+        "⚙️ Configuración de trading automático:\nAjusta los parámetros abajo para tu estrategia.",
+        reply_markup=keyboard
+    )
