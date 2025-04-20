@@ -1,5 +1,10 @@
 import os
 import nest_asyncio
+from dotenv import load_dotenv
+
+# ✅ تحميل متغيرات البيئة
+load_dotenv()
+
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from db_utils import init_db
 
@@ -25,12 +30,14 @@ from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
 # متغيرات البيئة
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثلاً: https://web-production-xxxx.up.railway.app
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
 def main():
+    nest_asyncio.apply()
     init_db()
+
     application = Application.builder().token(TOKEN).build()
 
     # Handlers
@@ -52,14 +59,13 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # تشغيل Webhook
+    # Webhook
     application.run_webhook(
-    listen="0.0.0.0",
-    port=int(os.environ.get("PORT", 8000)),
-    webhook_url=WEBHOOK_URL,
-    bootstrap_retries=0  # هذا يمنع محاولة تعيين Webhook تلقائيًا
-)
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000)),
+        webhook_url=WEBHOOK_URL,
+        bootstrap_retries=0  # ✅ مهم جداً لتفادي الأخطاء المتكررة في Railway
+    )
 
 if __name__ == "__main__":
-    nest_asyncio.apply()
     main()
