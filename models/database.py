@@ -4,12 +4,11 @@ from sqlalchemy.orm import sessionmaker
 import os
 import datetime
 
-# جلب رابط الاتصال من متغير البيئة
+# ✅ تأكد من وجود رابط الاتصال
 DATABASE_URL = os.getenv("DATABASE_URL")
-DATABASE_URL = os.getenv("DATABASE_URL")
-
 if not DATABASE_URL:
     raise Exception("❌ DATABASE_URL is missing! Please check your Railway environment variables.")
+
 # إنشاء الاتصال بقاعدة البيانات
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
@@ -17,9 +16,9 @@ Session = sessionmaker(bind=engine)
 # تعريف القاعدة
 Base = declarative_base()
 
-# تعريف جدول صفقات الحيتان الجديد
+# جدول صفقات الحيتان
 class WhaleTrade(Base):
-    __tablename__ = "whale_trades_v2"  # تأكد أنه نفس الاسم الموجود بقاعدة البيانات
+    __tablename__ = "whale_trades_v2"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger, nullable=False)
@@ -29,6 +28,6 @@ class WhaleTrade(Base):
     trade_type = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
-# إرجاع جلسة قاعدة البيانات
+# إرجاع جلسة
 def get_db():
     return Session()
