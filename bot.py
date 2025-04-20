@@ -59,3 +59,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+from subscriptions.auto_trade_settings_handler import handle_auto_trade_setting, receive_setting_input
+
+application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
