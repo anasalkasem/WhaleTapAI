@@ -1,42 +1,46 @@
 import os
-import nest_asyncio
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-from db_utils import init_db
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    CallbackQueryHandler,
+    MessageHandler,
+    filters
+)
 
-# Handlers
 from subscriptions.main_menu_handler import (
-    handle_main_menu, handle_subscription_info, handle_back_to_plans,
+    handle_main_menu,
+    handle_subscription_info,
+    handle_back_to_plans,
 )
 from subscriptions.payment_handlers import (
-    handle_pay_with_sol, handle_free_plan,
+    handle_pay_with_sol,
+    handle_free_plan,
 )
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.settings_handler import (
-    handle_settings, handle_change_language,
-    handle_language_selection, handle_toggle_notifications,
+    handle_settings,
+    handle_change_language,
+    handle_language_selection,
+    handle_toggle_notifications
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
 from subscriptions.copy_trade_handler import handle_copy_trade
 from subscriptions.auto_trading_handlers import (
-    handle_auto_trading, handle_stop_copying
+    handle_auto_trading,
+    handle_stop_copying
+)
+from subscriptions.auto_trade_settings_handler import (
+    handle_auto_trade_setting,
+    receive_setting_input
 )
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
-# ✅ متغيرات البيئة
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
-WEBHOOK_PATH = "/webhook"
-WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
 def main():
-    print("✅ Starting WhaleTap Bot...")
-    nest_asyncio.apply()
-    init_db()
-
     application = Application.builder().token(TOKEN).build()
 
-    # Handlers
     application.add_handler(CommandHandler("start", handle_main_menu))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
@@ -53,15 +57,12 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
     application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
+    application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # Webhook
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8000)),
-        webhook_url=WEBHOOK_URL,
-        bootstrap_retries=0
-    )
+    # ✅ شغل البوت بالطريقة التقليدية (polling)
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
