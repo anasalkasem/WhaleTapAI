@@ -1,3 +1,4 @@
+
 import os
 import nest_asyncio
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
@@ -23,9 +24,9 @@ from subscriptions.auto_trading_handlers import (
 )
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
-# ✅ متغيرات البيئة من Railway مباشرة
+# متغيرات البيئة من Railway
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")  # مثل: https://web-production-xxxx.up.railway.app
+WEBHOOK_DOMAIN = os.getenv("WEBHOOK_DOMAIN")
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{WEBHOOK_DOMAIN}{WEBHOOK_PATH}"
 
@@ -35,7 +36,6 @@ def main():
 
     application = Application.builder().token(TOKEN).build()
 
-    # Handlers
     application.add_handler(CommandHandler("start", handle_main_menu))
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
@@ -54,7 +54,6 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # Webhook
     application.run_webhook(
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
