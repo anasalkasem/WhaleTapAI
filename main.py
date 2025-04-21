@@ -18,6 +18,7 @@ from subscriptions.main_menu_handler import (
 from subscriptions.payment_handlers import (
     handle_pay_with_sol,
     handle_free_plan,
+    handle_subscribe_pro,  # ✅ إضافة الدالة الجديدة
 )
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.settings_handler import (
@@ -49,6 +50,7 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
     application.add_handler(CallbackQueryHandler(handle_back_to_plans, pattern="^back_to_plans$"))
     application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
+    application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))  # ✅ هنا الإضافة الجديدة
     application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
     application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
     application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
@@ -63,8 +65,6 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
-
-    # ✅ هاندلر تأكيد الدفع اليدوي للأدمن
     application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
 
     application.run_polling()
