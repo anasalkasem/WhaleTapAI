@@ -1,8 +1,7 @@
 # init_db.py
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
-from models.models import Base
+from models.payment_requests import Base  # تم التعديل هنا
 import os
 from dotenv import load_dotenv
 
