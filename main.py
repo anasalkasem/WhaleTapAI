@@ -7,8 +7,8 @@ from telegram.ext import (
     filters
 )
 
-# ← هذا السطر يشغل ملف تهيئة قاعدة البيانات عند تشغيل البوت (مؤقتًا)
-
+# ← استيراد تأكيد الدفع من قسم الأدمن
+from admin.confirm_payment_handler import handle_confirm_payment
 
 from subscriptions.main_menu_handler import (
     handle_main_menu,
@@ -63,6 +63,9 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
+
+    # ✅ هاندلر تأكيد الدفع اليدوي للأدمن
+    application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
 
     application.run_polling()
 
