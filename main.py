@@ -1,3 +1,4 @@
+
 import os
 from telegram.ext import (
     Application,
@@ -7,6 +8,7 @@ from telegram.ext import (
     ContextTypes,
     filters
 )
+from fastapi import FastAPI, Request
 from telegram import Update
 from admin.confirm_payment_handler import handle_confirm_payment
 from subscriptions.main_menu_handler import (
@@ -17,7 +19,6 @@ from subscriptions.main_menu_handler import (
 from subscriptions.payment_handlers import (
     handle_pay_with_sol,
     handle_free_plan,
-    handle_subscribe_pro
 )
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.settings_handler import (
@@ -40,41 +41,43 @@ from subscriptions.auto_trade_settings_handler import (
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_URL = "https://web-production-c5b8.up.railway.app/webhook"  # عدله إذا تغيّر
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # مثال: https://web-production-xxx.up.railway.app/webhook
 
-async def start_webhook():
-    application = Application.builder().token(TOKEN).build()
+app = FastAPI()
 
-    application.add_handler(CommandHandler("start", handle_main_menu))
-    application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
-    application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
-    application.add_handler(CallbackQueryHandler(handle_back_to_plans, pattern="^back_to_plans$"))
-    application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
-    application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))
-    application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
-    application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
-    application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
-    application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
-    application.add_handler(CallbackQueryHandler(handle_toggle_notifications, pattern="^toggle_notifications$"))
-    application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
-    application.add_handler(CallbackQueryHandler(handle_smart_insights, pattern="^smart_insights$"))
-    application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
-    application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
-    application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
-    application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
-    application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
-    application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
-    application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
+application = Application.builder().token(TOKEN).build()
 
-    # Webhook settings
-    await application.bot.set_webhook(WEBHOOK_URL)
-    await application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8000)),
-        webhook_url=WEBHOOK_URL,
-    )
+# Webhook endpoint
+@app.post("/webhook")
+async def telegram_webhook(req: Request):
+    data = await req.json()
+    update = Update.de_json(data, application.bot)
+    await application.update_queue.put(update)
+    return {"status": "ok"}
 
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(start_webhook())
+@app.on_event("startup")
+async def startup():
+    await application.bot.set_webhook(url=WEBHOOK_URL)
+    print("✅ Webhook set successfully.")
+
+# Telegram handlers
+application.add_handler(CommandHandler("start", handle_main_menu))
+application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
+application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
+application.add_handler(CallbackQueryHandler(handle_back_to_plans, pattern="^back_to_plans$"))
+application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
+application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
+application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
+application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
+application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
+application.add_handler(CallbackQueryHandler(handle_toggle_notifications, pattern="^toggle_notifications$"))
+application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
+application.add_handler(CallbackQueryHandler(handle_smart_insights, pattern="^smart_insights$"))
+application.add_handler(CallbackQueryHandler(handle_how_it_works, pattern="^how_it_works$"))
+application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
+application.add_handler(CallbackQueryHandler(handle_auto_trading, pattern="^auto_trading$"))
+application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
+application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
+application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
+application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
