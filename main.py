@@ -13,7 +13,7 @@ from subscriptions.main_menu_handler import (
     handle_back_to_plans,
 )
 from subscriptions.payment_handlers import (
-    handle_pay_with_sol,
+    handle_pay_with_sol,  # ✅ تأكد أن الدالة جديدة من ملف محدث
     handle_free_plan,
 )
 from subscriptions.stats_handler import handle_my_stats
@@ -36,17 +36,24 @@ from subscriptions.auto_trade_settings_handler import (
 )
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
+# ✅ تحميل التوكن من متغيرات البيئة
 TOKEN = os.getenv("BOT_TOKEN")
 
 def main():
     application = Application.builder().token(TOKEN).build()
 
+    # أوامر البوت
     application.add_handler(CommandHandler("start", handle_main_menu))
+
+    # أزرار تفاعلية
     application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
     application.add_handler(CallbackQueryHandler(handle_back_to_plans, pattern="^back_to_plans$"))
     application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
+
+    # ✅ زر الدفع بـ SOL (النسخة الجديدة التي تحفظ الطلب في قاعدة البيانات)
     application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
+
     application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
     application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
     application.add_handler(CallbackQueryHandler(handle_language_selection, pattern="^lang_"))
@@ -61,7 +68,7 @@ def main():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 
-    # ✅ شغل البوت بالطريقة التقليدية (polling)
+    # ✅ تشغيل البوت عبر polling (مناسب حالياً)
     application.run_polling()
 
 if __name__ == "__main__":
