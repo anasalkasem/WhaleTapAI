@@ -8,7 +8,7 @@ from telegram.ext import (
 )
 
 # ← هذا السطر يشغل ملف تهيئة قاعدة البيانات عند تشغيل البوت (مؤقتًا)
-import init_db
+
 
 from subscriptions.main_menu_handler import (
     handle_main_menu,
