@@ -134,3 +134,27 @@ def language_selection_keyboard():
         ],
         [InlineKeyboardButton("↩️ رجوع", callback_data="settings")]
     ])
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from models.database import Session
+from models.payment_requests import PaymentRequest
+
+ADMIN_ID = 6672291052  # ← تأكد أنه معرف الأدمن
+
+def main_menu_keyboard(user_id):
+    session = Session()
+    has_pending_payment = session.query(PaymentRequest).filter_by(user_id=user_id, status="pending").first()
+    session.close()
+
+    buttons = [
+        [InlineKeyboardButton("نسخ صفقات الحيتان 📉", callback_data="copy_trade"),
+         InlineKeyboardButton("اشتراك 💳", callback_data="subscription_info")],
+        [InlineKeyboardButton("إحصائياتي 📊", callback_data="my_stats"),
+         InlineKeyboardButton("الإعدادات ⚙️", callback_data="settings")],
+        [InlineKeyboardButton("النسخ التلقائي 🤖", callback_data="auto_trading")],
+        [InlineKeyboardButton("المساعدة ℹ️", callback_data="how_it_works")]
+    ]
+
+    if user_id == ADMIN_ID and has_pending_payment:
+        buttons.append([InlineKeyboardButton("تأكيد الدفع يدويًا ✅", callback_data="admin_confirm_payment")])
+
+    return InlineKeyboardMarkup(buttons)
