@@ -94,3 +94,19 @@ async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
 
     await query.edit_message_text(text=text, parse_mode="HTML")
+from sqlalchemy import Column, Integer, BigInteger, String, Float, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+import datetime
+
+Base = declarative_base()
+
+class PaymentRequest(Base):
+    __tablename__ = "payment_requests"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)  # رقم تعريفي فريد
+    user_id = Column(BigInteger, nullable=False)                # معرف المستخدم على تيليجرام
+    username = Column(String, nullable=True)                    # اسم المستخدم (اختياري)
+    wallet_address = Column(String, nullable=False)             # عنوان محفظتك (مثلاً: SOL)
+    amount = Column(Float, nullable=False)                      # المبلغ المطلوب دفعه
+    status = Column(String, default="pending")                  # الحالة: pending / confirmed / rejected
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)  # وقت الإنشاء
