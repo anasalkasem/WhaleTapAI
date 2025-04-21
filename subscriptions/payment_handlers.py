@@ -60,3 +60,37 @@ async def handle_free_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(text=text)
+from telegram import Update
+from telegram.ext import ContextTypes
+
+# عرض عنوان محفظة الدفع بـ SOL
+async def handle_pay_with_sol(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    lang = context.user_data.get("lang", "ar")
+    wallet_address = "GdUperqSSz4QJd2xGMmot1JGRU9n6wpWNzEbMBTbs5Wp"
+
+    if lang == "en":
+        text = (
+            "💠 <b>To complete your payment:</b>\n"
+            "Send exactly <code>1 SOL</code> to the address below:\n\n"
+            f"<code>{wallet_address}</code>\n\n"
+            "📌 After sending, please send the transaction hash or screenshot to confirm."
+        )
+    elif lang == "es":
+        text = (
+            "💠 <b>Para completar tu pago:</b>\n"
+            "Envía exactamente <code>1 SOL</code> a la siguiente dirección:\n\n"
+            f"<code>{wallet_address}</code>\n\n"
+            "📌 Después del envío, por favor envía el hash de la transacción o una captura de pantalla para confirmar."
+        )
+    else:
+        text = (
+            "💠 <b>لإتمام عملية الدفع:</b>\n"
+            "أرسل <code>1 SOL</code> إلى العنوان التالي:\n\n"
+            f"<code>{wallet_address}</code>\n\n"
+            "📌 بعد التحويل، أرسل صورة أو Hash المعاملة لتأكيد التفعيل."
+        )
+
+    await query.edit_message_text(text=text, parse_mode="HTML")
