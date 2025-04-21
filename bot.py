@@ -1,5 +1,5 @@
 import os
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 
 from subscriptions.main_menu_handler import (
     handle_main_menu,
@@ -19,6 +19,7 @@ from subscriptions.settings_handler import (
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_handler import handle_how_it_works
 from subscriptions.trade_handlers import handle_copy_trade  # زر نسخ الصفقة
+from subscriptions.auto_trade_settings_handler import handle_auto_trade_setting, receive_setting_input
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -35,8 +36,6 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
     application.add_handler(CallbackQueryHandler(handle_back_to_plans, pattern="^back_to_plans$"))
     application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
-
-    # الدفع بـ SOL فقط
     application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
 
     # الإعدادات واللغة
@@ -54,12 +53,12 @@ def main():
     # زر نسخ صفقة الحوت
     application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
 
+    # إعدادات التداول التلقائي
+    application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
+
     # تشغيل البوت
     application.run_polling()
 
 if __name__ == "__main__":
     main()
-from subscriptions.auto_trade_settings_handler import handle_auto_trade_setting, receive_setting_input
-
-application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^edit_"))
-application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
