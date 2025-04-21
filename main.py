@@ -4,12 +4,11 @@ from telegram.ext import (
     CommandHandler,
     CallbackQueryHandler,
     MessageHandler,
+    ContextTypes,
     filters
 )
-
-# ← استيراد تأكيد الدفع من قسم الأدمن
+from telegram import Update
 from admin.confirm_payment_handler import handle_confirm_payment
-
 from subscriptions.main_menu_handler import (
     handle_main_menu,
     handle_subscription_info,
@@ -18,7 +17,7 @@ from subscriptions.main_menu_handler import (
 from subscriptions.payment_handlers import (
     handle_pay_with_sol,
     handle_free_plan,
-    handle_subscribe_pro,  # ✅ إضافة الدالة الجديدة
+    handle_subscribe_pro
 )
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.settings_handler import (
@@ -41,8 +40,9 @@ from subscriptions.auto_trade_settings_handler import (
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
 TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_URL = "https://web-production-c5b8.up.railway.app/webhook"  # عدله إذا تغيّر
 
-def main():
+async def start_webhook():
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", handle_main_menu))
@@ -50,7 +50,7 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
     application.add_handler(CallbackQueryHandler(handle_back_to_plans, pattern="^back_to_plans$"))
     application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
-    application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))  # ✅ هنا الإضافة الجديدة
+    application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))
     application.add_handler(CallbackQueryHandler(handle_pay_with_sol, pattern="^pay_sol_pro$"))
     application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
     application.add_handler(CallbackQueryHandler(handle_change_language, pattern="^change_language$"))
@@ -67,7 +67,14 @@ def main():
     application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
     application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
 
-    application.run_polling()
+    # Webhook settings
+    await application.bot.set_webhook(WEBHOOK_URL)
+    await application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8000)),
+        webhook_url=WEBHOOK_URL,
+    )
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(start_webhook())
