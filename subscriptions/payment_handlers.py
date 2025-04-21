@@ -79,3 +79,23 @@ async def handle_free_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(text=text)
+from telegram import Update
+from telegram.ext import ContextTypes
+from subscriptions.keyboards import crypto_payment_keyboard
+
+# عرض كيبورد الدفع عند اختيار اشتراك PRO
+async def handle_subscribe_pro(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    lang = context.user_data.get("lang", "ar")
+    keyboard = crypto_payment_keyboard(plan="pro", lang=lang)
+
+    if lang == "en":
+        text = "Choose your preferred payment method below:"
+    elif lang == "es":
+        text = "Elige tu método de pago preferido:"
+    else:
+        text = "اختر طريقة الدفع التي تفضلها:"
+
+    await query.edit_message_text(text=text, reply_markup=keyboard)
