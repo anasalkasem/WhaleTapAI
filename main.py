@@ -1,5 +1,5 @@
-
 import os
+import uvicorn
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -10,6 +10,7 @@ from telegram.ext import (
 )
 from fastapi import FastAPI, Request
 from telegram import Update
+
 from admin.confirm_payment_handler import handle_confirm_payment
 from subscriptions.main_menu_handler import (
     handle_main_menu,
@@ -41,13 +42,13 @@ from subscriptions.auto_trade_settings_handler import (
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
 TOKEN = os.getenv("BOT_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # مثال: https://web-production-xxx.up.railway.app/webhook
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+PORT = int(os.environ.get("PORT", 8000))
 
 app = FastAPI()
 
 application = Application.builder().token(TOKEN).build()
 
-# Webhook endpoint
 @app.post("/webhook")
 async def telegram_webhook(req: Request):
     data = await req.json()
@@ -56,11 +57,11 @@ async def telegram_webhook(req: Request):
     return {"status": "ok"}
 
 @app.on_event("startup")
-async def startup():
+async def on_startup():
     await application.bot.set_webhook(url=WEBHOOK_URL)
-    print("✅ Webhook set successfully.")
+    print("✅ Webhook has been set.")
 
-# Telegram handlers
+# Handlers
 application.add_handler(CommandHandler("start", handle_main_menu))
 application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
 application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
@@ -81,3 +82,6 @@ application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern=
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_setting_input))
 application.add_handler(CallbackQueryHandler(handle_delete_trades, pattern="^admin_delete_trades$"))
 application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT)
