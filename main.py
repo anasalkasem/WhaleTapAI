@@ -1,3 +1,4 @@
+
 import os
 from telegram.ext import (
     Application,
@@ -5,11 +6,9 @@ from telegram.ext import (
     CallbackQueryHandler,
     MessageHandler,
     ContextTypes,
-    filters
+    filters,
 )
 from telegram import Update
-
-from admin.confirm_payment_handler import handle_confirm_payment
 from subscriptions.main_menu_handler import (
     handle_main_menu,
     handle_subscription_info,
@@ -24,23 +23,23 @@ from subscriptions.settings_handler import (
     handle_settings,
     handle_change_language,
     handle_language_selection,
-    handle_toggle_notifications
+    handle_toggle_notifications,
 )
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.how_it_works_handler import handle_how_it_works
 from subscriptions.copy_trade_handler import handle_copy_trade
 from subscriptions.auto_trading_handlers import (
     handle_auto_trading,
-    handle_stop_copying
+    handle_stop_copying,
 )
 from subscriptions.auto_trade_settings_handler import (
     handle_auto_trade_setting,
-    receive_setting_input
+    receive_setting_input,
 )
+from admin.confirm_payment_handler import handle_confirm_payment
 from utils.delete_table_whale_trades_v2 import handle_delete_trades
 
 TOKEN = os.getenv("BOT_TOKEN")
-
 application = Application.builder().token(TOKEN).build()
 
 # Handlers
