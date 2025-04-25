@@ -33,3 +33,14 @@ application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^a
 
 if __name__ == "__main__":
     application.run_polling()
+from subscriptions.smart_insights_handler import handle_smart_insights
+from subscriptions.stop_copying_handler import handle_stop_copying
+from subscriptions.stats_handler import handle_my_stats
+from subscriptions.free_plan_handler import handle_free_plan
+from subscriptions.settings_handler import handle_language_settings  # لنفترض أنها مسؤولة عن change_language
+
+application.add_handler(CallbackQueryHandler(handle_smart_insights, pattern="^smart_insights$"))
+application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop_copying$"))
+application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
+application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
+application.add_handler(CallbackQueryHandler(handle_language_settings, pattern="^change_language$"))
