@@ -43,10 +43,34 @@ def main_menu_keyboard(lang="ar", user_id=None):
             [InlineKeyboardButton("🆓 خطة مجانية", callback_data="subscribe_free")]
         ]
 
-    # إضافة زر تأكيد الدفع يدويًا فقط إذا كان المستخدم هو الأدمن ولديه طلب دفع معلق
     if user_id == ADMIN_ID and has_pending_payment:
         buttons.append([InlineKeyboardButton("✅ تأكيد الدفع يدويًا", callback_data="admin_confirm_payment")])
 
     return InlineKeyboardMarkup(buttons)
+
 def settings_keyboard(lang="ar"):
-    # محتوى الكيبورد المناسب لكل لغة
+    if lang == "en":
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 Change Language", callback_data="change_language")],
+            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
+        ])
+    elif lang == "es":
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 Cambiar idioma", callback_data="change_language")],
+            [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
+        ])
+    else:
+        return InlineKeyboardMarkup([
+            [InlineKeyboardButton("🌐 تغيير اللغة", callback_data="change_language")],
+            [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
+        ])
+
+def language_selection_keyboard():
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🇸🇦 العربية", callback_data="lang_ar"),
+            InlineKeyboardButton("🇺🇸 English", callback_data="lang_en"),
+            InlineKeyboardButton("🇪🇸 Español", callback_data="lang_es"),
+        ],
+        [InlineKeyboardButton("↩️ رجوع", callback_data="settings")]
+    ])
