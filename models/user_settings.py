@@ -1,10 +1,11 @@
+from models.database import Session
+from models.user_language import UserLanguage
+
 async def get_user_language(user_id: int):
     session = Session()
     lang_entry = session.query(UserLanguage).filter_by(user_id=user_id).first()
     session.close()
     return lang_entry.language if lang_entry else "en"
-from models.database import Session
-from models.user_language import UserLanguage
 
 def set_user_language(user_id: int, language: str):
     session = Session()
@@ -16,9 +17,3 @@ def set_user_language(user_id: int, language: str):
         session.add(new_lang)
     session.commit()
     session.close()
-
-def get_user_language(user_id: int) -> str:
-    session = Session()
-    lang_entry = session.query(UserLanguage).filter_by(user_id=user_id).first()
-    session.close()
-    return lang_entry.language if lang_entry else "en"
