@@ -1,19 +1,3 @@
-async def get_user_language(user_id: int) -> str:
-    return "en"
-from models.database import Session
-from models.user_language import UserLanguage
-
-async def set_user_language(user_id: int, language: str):
-    session = Session()
-    existing = session.query(UserLanguage).filter_by(user_id=user_id).first()
-    if existing:
-        existing.language = language
-    else:
-        new_lang = UserLanguage(user_id=user_id, language=language)
-        session.add(new_lang)
-    session.commit()
-    session.close()
-
 async def get_user_language(user_id: int):
     session = Session()
     lang_entry = session.query(UserLanguage).filter_by(user_id=user_id).first()
