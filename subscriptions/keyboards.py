@@ -35,43 +35,15 @@ def main_menu_keyboard(lang="ar", user_id=None):
             [InlineKeyboardButton("ℹ️ المساعدة", callback_data="how_it_works")]
         ]
 
-    # فقط للأدمن وعنده طلب دفع معلّق
     if user_id == ADMIN_ID:
+        # زر تأكيد الدفع إذا كان في طلب معلّق
         session = Session()
         has_pending_payment = session.query(PaymentRequest).filter_by(user_id=user_id, status="pending").first()
         session.close()
-
         if has_pending_payment:
             buttons.append([InlineKeyboardButton("✅ تأكيد الدفع يدويًا", callback_data="admin_confirm_payment")])
 
+        # زر حذف سجل الصفقات دائمًا للأدمن
+        buttons.append([InlineKeyboardButton("🧼 حذف سجل الصفقات", callback_data="admin_delete_trades")])
+
     return InlineKeyboardMarkup(buttons)
-
-
-def plans_keyboard(lang="ar"):
-    if lang == "en":
-        return InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("⭐ PRO Plan - $20", callback_data="subscribe_pro"),
-                InlineKeyboardButton("🆓 Free Trial", callback_data="subscribe_free")
-            ],
-            [InlineKeyboardButton("📋 How does the bot work?", callback_data="how_it_works")],
-            [InlineKeyboardButton("🏠 Main Menu", callback_data="main_menu")]
-        ])
-    elif lang == "es":
-        return InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("⭐ Plan PRO - $20", callback_data="subscribe_pro"),
-                InlineKeyboardButton("🆓 Prueba gratuita", callback_data="subscribe_free")
-            ],
-            [InlineKeyboardButton("📋 ¿Cómo funciona el bot?", callback_data="how_it_works")],
-            [InlineKeyboardButton("🏠 Menú principal", callback_data="main_menu")]
-        ])
-    else:
-        return InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("⭐ اشتراك PRO - 20$", callback_data="subscribe_pro"),
-                InlineKeyboardButton("🆓 نسخة تجريبية", callback_data="subscribe_free")
-            ],
-            [InlineKeyboardButton("📋 كيف يعمل البوت؟", callback_data="how_it_works")],
-            [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="main_menu")]
-        ])
