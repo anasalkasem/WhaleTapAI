@@ -17,3 +17,13 @@ def set_user_language(user_id: int, language: str):
         session.add(new_lang)
     session.commit()
     session.close()
+from sqlalchemy import Column, String, Integer
+from models.database import Base
+from models.user_language import UserLanguage
+
+class UserSettings(Base):
+    __tablename__ = "user_settings"
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, unique=True)
+    language = Column(String)  # ممكن يكون Enum أيضاً، لكن String أسهل الآن
