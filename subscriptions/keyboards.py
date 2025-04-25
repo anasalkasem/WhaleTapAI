@@ -4,7 +4,6 @@ from models.payment_requests import PaymentRequest
 
 ADMIN_ID = 6672291052
 
-# القائمة الرئيسية
 def main_menu_keyboard(lang="ar", user_id=None):
     buttons = []
 
@@ -36,16 +35,18 @@ def main_menu_keyboard(lang="ar", user_id=None):
             [InlineKeyboardButton("ℹ️ المساعدة", callback_data="how_it_works")]
         ]
 
+    # فقط للأدمن وعنده طلب دفع معلّق
     if user_id == ADMIN_ID:
         session = Session()
         has_pending_payment = session.query(PaymentRequest).filter_by(user_id=user_id, status="pending").first()
         session.close()
+
         if has_pending_payment:
             buttons.append([InlineKeyboardButton("✅ تأكيد الدفع يدويًا", callback_data="admin_confirm_payment")])
 
     return InlineKeyboardMarkup(buttons)
 
-# خطط الاشتراك
+
 def plans_keyboard(lang="ar"):
     if lang == "en":
         return InlineKeyboardMarkup([
