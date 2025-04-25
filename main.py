@@ -10,7 +10,7 @@ from subscriptions.auto_trading_handlers import handle_auto_trading
 from subscriptions.copy_trade_handler import handle_copy_trade
 from subscriptions.language_handler import handle_language_change
 from admin.confirm_payment_handler import handle_confirm_payment
-from models.database import init_db
+from models.init_db import init_db  # ← تم تصحيح المسار هنا
 
 # تهيئة قاعدة البيانات
 init_db()
