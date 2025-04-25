@@ -5,7 +5,7 @@ from subscriptions.main_menu_handler import (
     handle_back_to_plans
 )
 from subscriptions.settings_handler import handle_settings
-from subscriptions.auto_trading_handler import handle_auto_trading
+from subscriptions.auto_trading_handlers import handle_auto_trading  # ← تم التصحيح هنا
 from subscriptions.copy_trade_handler import handle_copy_trade
 from subscriptions.language_handler import handle_language_change
 from subscriptions.admin_handler import handle_admin_confirm_payment
@@ -18,7 +18,7 @@ init_db()
 TOKEN = os.getenv("BOT_TOKEN")
 application = Application.builder().token(TOKEN).build()
 
-# الأوامر
+# أوامر البداية
 application.add_handler(CommandHandler("start", handle_main_menu))
 
 # الكولباك من الأزرار
