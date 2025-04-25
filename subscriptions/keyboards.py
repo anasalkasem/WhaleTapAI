@@ -48,3 +48,5 @@ def main_menu_keyboard(lang="ar", user_id=None):
         buttons.append([InlineKeyboardButton("✅ تأكيد الدفع يدويًا", callback_data="admin_confirm_payment")])
 
     return InlineKeyboardMarkup(buttons)
+def settings_keyboard(lang="ar"):
+    # محتوى الكيبورد المناسب لكل لغة
