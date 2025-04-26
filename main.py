@@ -12,18 +12,18 @@ from subscriptions.stop_copying_handler import handle_stop_copying
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.free_plan_handler import handle_free_plan
 from admin.confirm_payment_handler import handle_confirm_payment
-from models.init_db import init_db  # تم تصحيح المسار هنا
+from models.init_db import init_db
 
-# تهيئة قاعدة البيانات
+# Initialize the database
 init_db()
 
 TOKEN = os.getenv("BOT_TOKEN")
 application = Application.builder().token(TOKEN).build()
 
-# أوامر البداية
+# Start command
 application.add_handler(CommandHandler("start", handle_main_menu))
 
-# الكولباك من الأزرار
+# Callback query handlers
 application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
 application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
