@@ -6,19 +6,18 @@ def trading_menu_keyboard():
     keyboard = [
         [
             InlineKeyboardButton("🛒 Buy", callback_data="buy"),
-            InlineKeyboardButton("💵 Sell", callback_data="sell"),
+            InlineKeyboardButton("💰 Sell", callback_data="sell")
         ],
         [
             InlineKeyboardButton("✈️ Copy Trades", callback_data="copy_trade"),
-            InlineKeyboardButton("🤖 Auto-Trading", callback_data="auto_trading"),
+            InlineKeyboardButton("🤖 Auto-Trading", callback_data="auto_trading")
         ],
         [
-            InlineKeyboardButton("📉 Limit Orders", callback_data="limit_orders"),
-            InlineKeyboardButton("🔄 Manual/Auto Switch", callback_data="manual_auto_switch"),
+            InlineKeyboardButton("📈 Limit Orders", callback_data="limit_orders"),
+            InlineKeyboardButton("⚙️ Manual/Auto Settings", callback_data="manual_auto_settings")
         ],
         [
-            InlineKeyboardButton("⬅️ Back to Main Menu", callback_data="main_menu"),
+            InlineKeyboardButton("⬅️ Back to Main Menu", callback_data="main_menu")
         ]
     ]
-
     return InlineKeyboardMarkup(keyboard)
