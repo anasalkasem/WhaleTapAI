@@ -1,13 +1,17 @@
-from models.database import Base, engine
-from sqlalchemy import text
-from models.auto_trading_settings import AutoTradingSettings
+from models import User  # أو أي موديل للمستخدمين عندك
+from sqlalchemy.ext.asyncio import AsyncSession
+from db import async_session  # جلسة الاتصال بقاعدة البيانات
 
-def init_db():
-    # حذف الجدول إذا كان موجود
-    with engine.connect() as connection:
-        connection.execute(text("DROP TABLE IF EXISTS whale_trades_v2"))
-        connection.commit()
+async def update_user_setting(user_id: int, setting_key: str, new_value: str) -> bool:
+    try:
+        async with async_session() as session:  # افتح جلسة قاعدة بيانات
+            user = await session.get(User, user_id)
+            if not user:
+                return False
 
-    # إعادة إنشاء الجداول
-    Base.metadata.create_all(bind=engine)
-    print("✅ تمت إعادة إنشاء جدول whale_trades_v2 بنجاح.")
+            setattr(user, setting_key, new_value)  # عدّل الإعداد
+            await session.commit()
+            return True
+    except Exception as e:
+        print(f"Database error: {e}")
+        return False
