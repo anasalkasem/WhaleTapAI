@@ -5,7 +5,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 def main_menu_keyboard():
     keyboard = [
         [
-            InlineKeyboardButton("🛒 Trading", callback_data="menu_trading"),
+            InlineKeyboardButton("🛒 Trading", callback_data="trading"),
             InlineKeyboardButton("🏦 Wallet", callback_data="menu_wallet"),
         ],
         [
