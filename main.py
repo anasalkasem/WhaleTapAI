@@ -2,7 +2,7 @@
 
 import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-from subscriptions.main_menu_handler import handle_main_menu
+from subscriptions.subscription_handler import handle_main_menu, handle_subscription_info
 from subscriptions.settings_handler import handle_settings
 from subscriptions.auto_trading_handlers import handle_auto_trading
 from subscriptions.copy_trade_handler import handle_copy_trade
@@ -10,20 +10,19 @@ from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.stop_copying_handler import handle_stop_copying
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.free_plan_handler import handle_free_plan
-from subscriptions.subscription_handler import handle_subscription_info
 from admin.confirm_payment_handler import handle_confirm_payment
 from models.init_db import init_db
 
-# Initialize database
+# Initialize the database
 init_db()
 
 TOKEN = os.getenv("BOT_TOKEN")
 application = Application.builder().token(TOKEN).build()
 
-# Start command
+# Command Handlers
 application.add_handler(CommandHandler("start", handle_main_menu))
 
-# Callback handlers
+# CallbackQuery Handlers
 application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
 application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
