@@ -12,6 +12,8 @@ from subscriptions.stats_handler import handle_my_stats
 from subscriptions.free_plan_handler import handle_free_plan
 from admin.confirm_payment_handler import handle_confirm_payment
 from models.init_db import init_db
+from subscriptions.trading_menu_handler import handle_trading_menu
+application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
 
 # Initialize the database
 init_db()
