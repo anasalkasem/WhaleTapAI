@@ -3,7 +3,7 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 from subscriptions.subscription_handler import handle_main_menu, handle_subscription_info
 from subscriptions.settings_handler import handle_settings
-from subscriptions.auto_trading_handler import handle_auto_trading
+from subscriptions.auto_trade_settings_handler import handle_auto_trade_setting, receive_setting_input
 from subscriptions.copy_trade_handler import handle_copy_trade
 from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.stop_copying_handler import handle_stop_copying
