@@ -2,7 +2,7 @@
 
 from telegram import Update
 from telegram.ext import ContextTypes
-from keyboards import main_menu_keyboard  # استيراد صحيح من ملف keyboards.py
+from subscriptions.keyboards import main_menu_keyboard  # استيراد صحيح
 
 async def handle_ai_trading(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
