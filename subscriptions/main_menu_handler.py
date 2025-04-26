@@ -1,27 +1,19 @@
+# subscriptions/main_menu_handler.py
+
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import CallbackContext
 from subscriptions.keyboards import main_menu_keyboard
-from models.user_settings import get_user_language
 
-# عرض القائمة الرئيسية
-async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    lang = await get_user_language(user_id)
-    keyboard = main_menu_keyboard(lang, user_id)
-    await update.message.reply_text("Welcome to WhaleTap!", reply_markup=keyboard)
-
-# عرض معلومات الاشتراك
-async def handle_subscription_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.callback_query.answer()
-    await update.callback_query.message.edit_text(
-        "Subscription Info:\n- PRO = $20/month\n- Free Plan = 1 trade/day"
-    )
-
-# الرجوع إلى خطط الاشتراك
-async def handle_back_to_plans(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    from subscriptions.keyboards import plans_keyboard
-    user_id = update.effective_user.id
-    lang = await get_user_language(user_id)
-    keyboard = plans_keyboard(lang)
-    await update.callback_query.answer()
-    await update.callback_query.message.edit_text("Choose your plan:", reply_markup=keyboard)
+async def handle_main_menu(update: Update, context: CallbackContext):
+    query = update.callback_query
+    if query:
+        await query.answer()
+        await query.edit_message_text(
+            text="Welcome to WhaleTap!",
+            reply_markup=main_menu_keyboard()
+        )
+    else:
+        await update.message.reply_text(
+            text="Welcome to WhaleTap!",
+            reply_markup=main_menu_keyboard()
+        )
