@@ -11,8 +11,10 @@ from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.stop_copying_handler import handle_stop_copying
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.free_plan_handler import handle_free_plan
-from admin.confirm_payment_handler import handle_confirm_payment
 from subscriptions.trading_menu_handler import handle_trading_menu
+from subscriptions.ai_trading_handler import handle_ai_trading  # استيراد زر AI Trading
+
+from admin.confirm_payment_handler import handle_confirm_payment
 
 from models.init_db import init_db
 
@@ -36,7 +38,8 @@ application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop
 application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
 application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
 application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
-application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
+application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^menu_trading$"))  # لاحظ التصحيح: menu_trading
+application.add_handler(CallbackQueryHandler(handle_ai_trading, pattern="^ai_trading$"))     # إضافة زر AI Trading
 
 if __name__ == "__main__":
     application.run_polling()
