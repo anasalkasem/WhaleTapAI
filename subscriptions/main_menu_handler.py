@@ -17,3 +17,12 @@ async def handle_main_menu(update: Update, context: CallbackContext):
             text="Welcome to WhaleTap!",
             reply_markup=main_menu_keyboard()
         )
+
+async def handle_subscription_info(update: Update, context: CallbackContext):
+    query = update.callback_query
+    if query:
+        await query.answer()
+        await query.edit_message_text(
+            text="Choose your subscription plan:",
+            reply_markup=main_menu_keyboard()
+        )
