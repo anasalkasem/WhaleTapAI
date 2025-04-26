@@ -6,6 +6,6 @@ async def handle_trading_menu(update: Update, context: ContextTypes.DEFAULT_TYPE
     query = update.callback_query
     await query.answer()
     await query.edit_message_text(
-        text="📈 Trading Options:",
+        text="🛒 Welcome to Trading Menu!\n\nChoose an option below:",
         reply_markup=trading_menu_keyboard()
     )
