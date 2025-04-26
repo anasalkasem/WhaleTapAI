@@ -15,6 +15,7 @@ from subscriptions.trading_menu_handler import handle_trading_menu
 # Initialize the database
 init_db()
 
+# Initialize application
 TOKEN = os.getenv("BOT_TOKEN")
 application = Application.builder().token(TOKEN).build()
 
