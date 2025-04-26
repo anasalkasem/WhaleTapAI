@@ -1,5 +1,3 @@
-# main.py
-
 import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from subscriptions.subscription_handler import handle_main_menu, handle_subscription_info
@@ -13,7 +11,6 @@ from subscriptions.free_plan_handler import handle_free_plan
 from admin.confirm_payment_handler import handle_confirm_payment
 from models.init_db import init_db
 from subscriptions.trading_menu_handler import handle_trading_menu
-application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
 
 # Initialize the database
 init_db()
@@ -35,6 +32,7 @@ application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop
 application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
 application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
 application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
+application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
 
 if __name__ == "__main__":
     application.run_polling()
