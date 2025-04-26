@@ -1,19 +1,24 @@
+# subscriptions/insights_handler.py
+
 from telegram import Update
 from telegram.ext import ContextTypes
 from subscriptions.keyboards import main_menu_keyboard
 
 async def handle_smart_insights(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle Smart Whale Insights action."""
+    query = update.callback_query
+    await query.answer()
+
     text = (
         "🧠 <b>Smart Whale Insights</b>\n\n"
-        "📍 Highlighted whale activities over the past 24 hours:\n"
-        "• Purchase of 120,000 SOL to wallet ...A1...\n"
-        "• Transfer of 50,000 USDT to Binance from wallet ...B9...\n"
-        "• New whales entering the market today.\n\n"
-        "Stay updated with the smartest whale moves!"
+        "Here are the latest notable whale activities:\n"
+        "🔹 120,000 SOL purchased by wallet A1...2F.\n"
+        "🔹 50,000 USDT transferred to Binance by wallet B9...C3.\n"
+        "🔹 New whales joined the market today.\n\n"
+        "Stay updated with real-time whale movements to make smarter decisions!"
     )
 
-    await update.callback_query.answer()
-    await update.callback_query.edit_message_text(
+    await query.edit_message_text(
         text=text,
         parse_mode="HTML",
         reply_markup=main_menu_keyboard()
