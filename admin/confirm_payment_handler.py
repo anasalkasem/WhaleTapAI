@@ -1,46 +1,62 @@
-# admin/confirm_payment_handler.py
-
 from telegram import Update
 from telegram.ext import ContextTypes
 from models.database import get_db
 from models.payment_requests import PaymentRequest
-from models.models import Subscription
-
-# معرف الأدمن الخاص بك (غيره إلى رقمك)
-ADMIN_ID = 6672291052
+from models.subscriptions import Subscription
+import datetime
 
 async def handle_confirm_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.callback_query.from_user.id
     query = update.callback_query
+    admin_id = query.from_user.id
 
     await query.answer()
 
-    # تحقق أن المستخدم هو الأدمن فقط
-    if user_id != ADMIN_ID:
-        await query.edit_message_text("❌ You are not authorized to confirm payments.")
-        return
-
     db = get_db()
 
-    # البحث عن أول طلب دفع معلق
-    payment = db.query(PaymentRequest).filter_by(status="pending").first()
+    # 1. البحث عن أول دفعة قيد الانتظار
+    pending_payment = db.query(PaymentRequest).filter(
+        PaymentRequest.status == "pending"
+    ).first()
 
-    if payment:
-        # تحديث حالة الدفع إلى confirmed
-        payment.status = "confirmed"
+    if not pending_payment:
+        await query.edit_message_text("❌ No pending payment requests found.")
+        db.close()
+        return
 
-        # تحديث الاشتراك إلى PRO
-        subscription = db.query(Subscription).filter_by(user_id=payment.user_id).first()
-        if subscription:
-            subscription.subscription_type = "pro"
-        else:
-            # إذا لا يوجد اشتراك سابق، ننشئ واحد
-            new_subscription = Subscription(user_id=payment.user_id, subscription_type="pro")
-            db.add(new_subscription)
+    # 2. تحديث حالة الدفع إلى 'confirmed'
+    pending_payment.status = "confirmed"
+    pending_payment.confirmed_at = datetime.datetime.utcnow()
 
-        db.commit()
-        await query.edit_message_text("✅ Payment has been confirmed and PRO subscription activated!")
+    # 3. تحديث أو إنشاء اشتراك PRO للمستخدم
+    subscription = db.query(Subscription).filter(
+        Subscription.user_id == pending_payment.user_id
+    ).first()
+
+    if subscription:
+        subscription.plan = "pro"
+        subscription.active = True
+        subscription.updated_at = datetime.datetime.utcnow()
     else:
-        await query.edit_message_text("ℹ️ No pending payment requests found.")
+        new_sub = Subscription(
+            user_id=pending_payment.user_id,
+            plan="pro",
+            active=True,
+            created_at=datetime.datetime.utcnow(),
+            updated_at=datetime.datetime.utcnow()
+        )
+        db.add(new_sub)
 
+    db.commit()
     db.close()
+
+    # 4. إرسال رسالة للأدمن بتأكيد العملية
+    await query.edit_message_text(f"✅ Payment confirmed and PRO plan activated for user ID: {pending_payment.user_id}")
+
+    # 5. إرسال رسالة للمستخدم مباشرة
+    try:
+        await context.bot.send_message(
+            chat_id=pending_payment.user_id,
+            text="🎉 Congratulations! Your PRO subscription is now active. Enjoy unlimited trading features!"
+        )
+    except Exception as e:
+        print(f"Failed to send message to user: {e}")
