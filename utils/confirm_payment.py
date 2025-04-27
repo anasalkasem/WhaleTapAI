@@ -1,6 +1,4 @@
-# utils/confirm_payment.py
-
-from models.db_utils import save_payment_request
+from utils.db_utils import save_payment_request  # تصحيح مسار الاستيراد
 
 # Your SOL wallet address
 WALLET_ADDRESS = "GdUperqSSz4QJd2xGMmot1JGRU9n6wpWNzEbMBTbs5Wp"
