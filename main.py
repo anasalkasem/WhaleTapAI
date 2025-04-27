@@ -41,7 +41,7 @@ application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats
 application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
 application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
 application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
-application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))  # <-- أضفناه هنا
+application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))  # بدون تكرار
 
 if __name__ == "__main__":
     application.run_polling()
