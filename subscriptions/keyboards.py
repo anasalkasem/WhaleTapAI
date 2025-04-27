@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-ADMIN_IDS = [6672291052]  # المعرفات المسموحة
+ADMIN_IDS = [6672291052]  # معرفات الأدمن
 
 def main_menu_keyboard(user_id):
     keyboard = [
@@ -20,7 +20,7 @@ def main_menu_keyboard(user_id):
         [
             InlineKeyboardButton("💳 Subscribe PRO", callback_data="subscribe_pro"),
             InlineKeyboardButton("🆓 Free Plan", callback_data="subscribe_free"),
-        ],
+        ]
     ]
 
     if user_id in ADMIN_IDS:
