@@ -1,21 +1,31 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-def trading_menu_keyboard():
+ADMIN_IDS = [6672291052]  # المعرفات المسموحة
+
+def main_menu_keyboard(user_id):
     keyboard = [
         [
-            InlineKeyboardButton("🛒 Buy", callback_data="buy"),
-            InlineKeyboardButton("💰 Sell", callback_data="sell")
+            InlineKeyboardButton("🛒 Trading", callback_data="trading"),
+            InlineKeyboardButton("🤖 AI Trading", callback_data="auto_trading"),
+            InlineKeyboardButton("💼 Wallet", callback_data="wallet"),
         ],
         [
-            InlineKeyboardButton("✈️ Copy Trades", callback_data="copy_trades"),
-            InlineKeyboardButton("🤖 Auto-Trading", callback_data="auto_trading")
+            InlineKeyboardButton("⚙️ Settings", callback_data="settings"),
+            InlineKeyboardButton("📊 Portfolio", callback_data="my_stats"),
         ],
         [
-            InlineKeyboardButton("📊 Limit Orders", callback_data="limit_orders"),
-            InlineKeyboardButton("⚙️ Manual/Auto Switch", callback_data="manual_auto_switch")
+            InlineKeyboardButton("🧠 Smart Insights", callback_data="smart_insights"),
+            InlineKeyboardButton("🛑 Stop Copying", callback_data="stop_copying"),
         ],
         [
-            InlineKeyboardButton("⬅️ Back to Main Menu", callback_data="main_menu")
-        ]
+            InlineKeyboardButton("💳 Subscribe PRO", callback_data="subscribe_pro"),
+            InlineKeyboardButton("🆓 Free Plan", callback_data="subscribe_free"),
+        ],
     ]
+
+    if user_id in ADMIN_IDS:
+        keyboard.append(
+            [InlineKeyboardButton("✅ Confirm Payment", callback_data="admin_confirm_payment")]
+        )
+
     return InlineKeyboardMarkup(keyboard)
