@@ -13,7 +13,7 @@ async def handle_subscribe_pro(update, context):
     await query.answer()
 
     # Save payment request in the database
-     save_payment_request(user_id, username, WALLET_ADDRESS, 20.0)
+    save_payment_request(user_id, username, WALLET_ADDRESS, 20.0)
 
     # Send payment instructions to the user
     await query.edit_message_text(
