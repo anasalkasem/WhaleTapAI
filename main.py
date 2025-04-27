@@ -3,6 +3,7 @@
 import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
+# باقي الهاندلرات
 from subscriptions.subscription_handler import handle_main_menu, handle_subscription_info
 from subscriptions.settings_handler import handle_settings
 from subscriptions.auto_trade_settings_handler import handle_auto_trade_setting, receive_setting_input
@@ -11,10 +12,11 @@ from subscriptions.insights_handler import handle_smart_insights
 from subscriptions.stop_copying_handler import handle_stop_copying
 from subscriptions.stats_handler import handle_my_stats
 from subscriptions.free_plan_handler import handle_free_plan
-from subscriptions.trading_menu_handler import handle_trading_menu
-from subscriptions.ai_trading_handler import handle_ai_trading  # استيراد زر AI Trading
-
 from admin.confirm_payment_handler import handle_confirm_payment
+from subscriptions.trading_menu_handler import handle_trading_menu
+
+# استيراد وظيفة الاشتراك المدفوع الجديدة
+from utils.confirm_payment import handle_subscribe_pro
 
 from models.init_db import init_db
 
@@ -38,8 +40,8 @@ application.add_handler(CallbackQueryHandler(handle_stop_copying, pattern="^stop
 application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats$"))
 application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
 application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
-application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^menu_trading$"))  # لاحظ التصحيح: menu_trading
-application.add_handler(CallbackQueryHandler(handle_ai_trading, pattern="^ai_trading$"))     # إضافة زر AI Trading
+application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
+application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))  # <-- أضفناه هنا
 
 if __name__ == "__main__":
     application.run_polling()
