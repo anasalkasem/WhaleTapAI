@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-ADMIN_IDS = [6672291052]  # ضع معرفك كأدمن هنا
+ADMIN_IDS = [6672291052]  # المعرفات المسموحة
 
 def main_menu_keyboard(user_id):
     keyboard = [
@@ -23,7 +23,6 @@ def main_menu_keyboard(user_id):
         ],
     ]
 
-    # هنا الشرط: لو المستخدم هو الأدمن أضف زر تأكيد الدفع
     if user_id in ADMIN_IDS:
         keyboard.append(
             [InlineKeyboardButton("✅ Confirm Payment", callback_data="admin_confirm_payment")]
