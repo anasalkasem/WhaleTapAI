@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from models.database import get_db
 from models.payment_requests import PaymentRequest
-from models.subscriptions import Subscription
+from models.models import Subscription
 import datetime
 
 async def handle_confirm_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
