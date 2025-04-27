@@ -1,39 +1,26 @@
 # utils/confirm_payment.py
 
-from sqlalchemy import update, select
-from models.database import Session
-from models.payment_requests import PaymentRequest
-from models.models import Subscription
-import datetime
+from models.db_utils import save_payment_request
 
-def confirm_payment_request(user_id):
-    session = Session()
+# Your SOL wallet address
+WALLET_ADDRESS = "GdUperqSSz4QJd2xGMmot1JGRU9n6wpWNzEbMBTbs5Wp"
 
-    # تحديث حالة الدفع إلى "confirmed"
-    session.execute(
-        update(PaymentRequest)
-        .where(PaymentRequest.user_id == user_id)
-        .values(status="confirmed")
+async def handle_subscribe_pro(update, context):
+    user_id = update.callback_query.from_user.id
+    query = update.callback_query
+
+    await query.answer()
+
+    # Save payment request in the database
+    await save_payment_request(user_id)
+
+    # Send payment instructions to the user
+    await query.edit_message_text(
+        text=(
+            "✅ Your subscription request has been registered!\n\n"
+            "Please send **20 USDC-SPL** to the following wallet address:\n\n"
+            f"`{WALLET_ADDRESS}`\n\n"
+            "After the transfer, your subscription will be activated shortly."
+        ),
+        parse_mode="Markdown"
     )
-
-    # التأكد إذا المستخدم عنده اشتراك سابق
-    existing = session.execute(
-        select(Subscription).where(Subscription.user_id == user_id)
-    ).scalar_one_or_none()
-
-    if existing:
-        session.execute(
-            update(Subscription)
-            .where(Subscription.user_id == user_id)
-            .values(plan_type="pro", created_at=datetime.datetime.utcnow())
-        )
-    else:
-        new_sub = Subscription(
-            user_id=user_id,
-            plan_type="pro",
-            created_at=datetime.datetime.utcnow()
-        )
-        session.add(new_sub)
-
-    session.commit()
-    session.close()
