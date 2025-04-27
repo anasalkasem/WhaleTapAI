@@ -4,7 +4,7 @@ import os
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 # باقي الهاندلرات
-from subscriptions.subscription_handler import handle_main_menu, handle_subscription_info
+from subscriptions.subscription_handler import handle_main_menu
 from subscriptions.settings_handler import handle_settings
 from subscriptions.auto_trade_settings_handler import handle_auto_trade_setting, receive_setting_input
 from subscriptions.copy_trade_handler import handle_copy_trade
@@ -31,7 +31,6 @@ application.add_handler(CommandHandler("start", handle_main_menu))
 
 # CallbackQuery Handlers
 application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
-application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
 application.add_handler(CallbackQueryHandler(handle_settings, pattern="^settings$"))
 application.add_handler(CallbackQueryHandler(handle_auto_trade_setting, pattern="^auto_trading$"))
 application.add_handler(CallbackQueryHandler(handle_copy_trade, pattern="^copy_trade$"))
@@ -41,7 +40,7 @@ application.add_handler(CallbackQueryHandler(handle_my_stats, pattern="^my_stats
 application.add_handler(CallbackQueryHandler(handle_free_plan, pattern="^subscribe_free$"))
 application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))
 application.add_handler(CallbackQueryHandler(handle_trading_menu, pattern="^trading$"))
-application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))  # بدون تكرار
+application.add_handler(CallbackQueryHandler(handle_subscribe_pro, pattern="^subscribe_pro$"))
 
 if __name__ == "__main__":
     application.run_polling()
