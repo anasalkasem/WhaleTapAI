@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from utils.confirm_payment import confirm_payment_request
+from utils.confirm_payment import handle_subscribe_pro
 
 ADMIN_ID = 6672291052  # ← غيّره لو تغير رقمك لاحقًا
 
