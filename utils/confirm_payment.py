@@ -1,6 +1,5 @@
-from models.db_utils import save_payment_request  # المسار الصحيح
+from utils.save_payment import save_payment_request
 
-# Your SOL wallet address
 WALLET_ADDRESS = "GdUperqSSz4QJd2xGMmot1JGRU9n6wpWNzEbMBTbs5Wp"
 
 async def handle_subscribe_pro(update, context):
