@@ -1,18 +1,16 @@
-# utils/confirm_payment.py
+from utils.save_payment_request import save_payment_request
 
-from utils.save_payment_request import save_payment_request  # صحيح الآن
-
-# Your SOL wallet address
 WALLET_ADDRESS = "GdUperqSSz4QJd2xGMmot1JGRU9n6wpWNzEbMBTbs5Wp"
 
 async def handle_subscribe_pro(update, context):
-    user_id = update.callback_query.from_user.id  # Telegram ID
-    username = update.callback_query.from_user.username  # Telegram username
     query = update.callback_query
+    user = query.from_user
+    user_id = user.id
+    username = user.username or "Unknown"
 
     await query.answer()
 
-    # Save payment request in the database with all needed information
+    # Save payment request in the database
     await save_payment_request(user_id, username, WALLET_ADDRESS)
 
     # Send payment instructions to the user
