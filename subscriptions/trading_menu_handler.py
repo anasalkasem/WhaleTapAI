@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from subscriptions.trading_menu_keyboard import trading_menu_keyboard
+from subscriptions.keyboards import main_menu_keyboard
 from subscriptions.main_menu_keyboard import main_menu_keyboard  # <-- اضفناه
 
 async def handle_trading_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
