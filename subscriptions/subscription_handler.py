@@ -1,6 +1,7 @@
 from telegram import Update
-from telegram.ext import ContextTypes
-from subscriptions.keyboards import main_menu_keyboard  # استدعاء الكيبورد الصح
+from telegram.ext import ContextTypes, CallbackQueryHandler
+from subscriptions.keyboards import main_menu_keyboard
+from admin.confirm_payment_handler import handle_confirm_payment  # <-- إضافة مهمة
 
 async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -37,3 +38,9 @@ async def handle_subscription_info(update: Update, context: ContextTypes.DEFAULT
             text="💳 Choose your plan and unlock premium features!",
             reply_markup=keyboard
         )
+
+# إضافة هندلر زر الادمن "Confirm Payment"
+def add_handlers(application):
+    application.add_handler(CallbackQueryHandler(handle_main_menu, pattern="^main_menu$"))
+    application.add_handler(CallbackQueryHandler(handle_subscription_info, pattern="^subscription_info$"))
+    application.add_handler(CallbackQueryHandler(handle_confirm_payment, pattern="^admin_confirm_payment$"))  # زر الأدمن
