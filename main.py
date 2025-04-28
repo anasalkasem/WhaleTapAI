@@ -1,7 +1,5 @@
 import os
 from telegram.ext import Application, CommandHandler
-
-# استيراد وظيفة إضافة كل الهاندلرات دفعة وحدة
 from subscriptions.subscription_handler import add_handlers
 from models.init_db import init_db
 
@@ -12,15 +10,15 @@ init_db()
 TOKEN = os.getenv("BOT_TOKEN")
 application = Application.builder().token(TOKEN).build()
 
-# أمر /start يفتح القائمة الرئيسية
-application.add_handler(CommandHandler("start", handle_start))
-
-# تعريف دالة /start
+# أولاً عرف الدالة
 async def handle_start(update, context):
     from subscriptions.subscription_handler import handle_main_menu
     await handle_main_menu(update, context)
 
-# إضافة جميع الهاندلرز دفعة وحدة
+# بعدين استدعيها
+application.add_handler(CommandHandler("start", handle_start))
+
+# إضافة كل الهاندلرات مرة وحدة
 add_handlers(application)
 
 if __name__ == "__main__":
