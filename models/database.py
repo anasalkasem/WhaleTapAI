@@ -31,17 +31,12 @@ class WhaleTrade(Base):
     def __repr__(self):
         return f"<WhaleTrade(wallet='{self.whale_wallet}', token='{self.token_address}', amount={self.amount})>"
 
-# ✅ دالة لإرجاع جلسة قاعدة البيانات
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# ✅ جدول طلبات الدفع
 from models.payment_requests import PaymentRequest
 
+# ✅ دالة التحقق من وجود طلب دفع معلّق للمستخدم
 def has_pending_payment_request(user_id: int) -> bool:
-    db = get_db()
+    db = SessionLocal()
     result = db.query(PaymentRequest).filter_by(user_id=user_id, status="pending").first()
     db.close()
     return result is not None
