@@ -38,3 +38,10 @@ def get_db():
         yield db
     finally:
         db.close()
+from models.payment_requests import PaymentRequest
+
+def has_pending_payment_request(user_id: int) -> bool:
+    db = get_db()
+    result = db.query(PaymentRequest).filter_by(user_id=user_id, status="pending").first()
+    db.close()
+    return result is not None
