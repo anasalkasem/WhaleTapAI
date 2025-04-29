@@ -2,7 +2,7 @@
 
 from telegram import Update
 from telegram.ext import ContextTypes
-from models.database import get_db
+from models.database import get_db_session  # ✅ تم تعديل الاسم الصحيح
 from models.payment_requests import PaymentRequest
 from models.models import Subscription
 import datetime
@@ -21,7 +21,7 @@ async def handle_confirm_payment(update: Update, context: ContextTypes.DEFAULT_T
         await query.edit_message_text("❌ You are not authorized to confirm payments.")
         return
 
-    db = get_db()
+    db = get_db_session()
 
     try:
         # البحث عن أول دفعة قيد الانتظار
