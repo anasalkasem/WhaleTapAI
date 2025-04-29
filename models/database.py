@@ -7,20 +7,20 @@ import os
 # ✅ جلب رابط الاتصال من متغير البيئة
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
-    raise Exception("❌ DATABASE_URL is missing! Please check your Railway environment variables.")
+    raise RuntimeError("❌ DATABASE_URL is missing! Please check your Railway environment variables.")
 
-# إنشاء الاتصال
-engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
+# ✅ إنشاء الاتصال والجلسة
+engine = create_engine(DATABASE_URL, echo=False)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# تعريف القاعدة
+# ✅ تعريف قاعدة النماذج
 Base = declarative_base()
 
 # ✅ جدول صفقات الحيتان الرسمي
 class WhaleTrade(Base):
     __tablename__ = "whale_trades_v2"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(BigInteger, nullable=False)
     whale_wallet = Column(String, nullable=False)
     token_address = Column(String, nullable=False)
@@ -29,8 +29,12 @@ class WhaleTrade(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<WhaleTrade(whale_wallet='{self.whale_wallet}', token='{self.token_address}', amount={self.amount})>"
+        return f"<WhaleTrade(wallet='{self.whale_wallet}', token='{self.token_address}', amount={self.amount})>"
 
-# ✅ إعادة جلسة DB
+# ✅ دالة لإرجاع جلسة قاعدة البيانات
 def get_db():
-    return Session()
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
