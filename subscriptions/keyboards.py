@@ -1,6 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from database_utils import has_pending_payment_request  # تأكد أن هذه الدالة موجودة وتعمل
 
-ADMIN_IDS = [6672291052]  # معرفات الأدمن
+ADMIN_IDS = [6672291052]
 
 def main_menu_keyboard(user_id):
     keyboard = [
@@ -23,7 +24,7 @@ def main_menu_keyboard(user_id):
         ]
     ]
 
-    if user_id in ADMIN_IDS:
+    if user_id in ADMIN_IDS and has_pending_payment_request(user_id):
         keyboard.append(
             [InlineKeyboardButton("✅ Confirm Payment", callback_data="admin_confirm_payment")]
         )
