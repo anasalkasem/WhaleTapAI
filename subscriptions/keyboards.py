@@ -1,5 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from database_utils import has_pending_payment_request  # تأكد أن هذه الدالة موجودة وتعمل
+from models.database import has_pending_payment_request  # ✅ تعديل اسم الملف الصحيح
 
 ADMIN_IDS = [6672291052]
 
