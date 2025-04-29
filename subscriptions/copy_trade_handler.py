@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from models.database import Session, WhaleTrade
+from models.database import SessionLocal, WhaleTrade
 from subscriptions.keyboards import main_menu_keyboard
 import datetime
 import logging
@@ -14,7 +14,7 @@ async def handle_copy_trade(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data.get("lang", "ar")
 
     try:
-        session = Session()
+        session = SessionLocal()
 
         # صفقة وهمية
         fake_trade = WhaleTrade(
